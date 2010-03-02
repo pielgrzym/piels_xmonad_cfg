@@ -20,7 +20,7 @@ main= do
         bar <- spawnPipe myStatusBar
         xmonad $ defaultConfig 
                 { 
-                borderWidth          = 2
+                borderWidth          = 1
                 , terminal           = "urxvt"
                 , normalBorderColor  = "#262626"
                 , focusedBorderColor = "#ff5f00" 

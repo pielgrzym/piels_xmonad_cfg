@@ -42,14 +42,14 @@ main= do
                 , ("M-g", goToSelected defaultGSConfig)
                 , ("M-n", sendMessage MirrorShrink)
                 , ("M-b", sendMessage MirrorExpand)
-                , ("M-M1-<Left>",    sendMessage Shrink)                     -- Resize Window
-                , ("M-M1-<Right>",   sendMessage Expand)
-                , ("M-M1-<Up>",              sendMessage MirrorExpand)
-                , ("M-M1-<Down>",    sendMessage MirrorShrink)
-                , ("M-m <Left>",             sendMessage $ pullGroup L)      -- Merge to Tabbed
-                , ("M-m <Right>",    sendMessage $ pullGroup R)
-                , ("M-m <Up>",               sendMessage $ pullGroup U)
-                , ("M-m <Down>",             sendMessage $ pullGroup D)
+                , ("M-M1-h",    sendMessage Shrink)                     -- Resize Window
+                , ("M-M1-l",   sendMessage Expand)
+                , ("M-M1-k",              sendMessage MirrorExpand)
+                , ("M-M1-j",    sendMessage MirrorShrink)
+                , ("M-m h",             sendMessage $ pullGroup L)      -- Merge to Tabbed
+                , ("M-m l",    sendMessage $ pullGroup R)
+                , ("M-m k",               sendMessage $ pullGroup U)
+                , ("M-m j",             sendMessage $ pullGroup D)
                 , ("M-m m",                  withFocused (sendMessage . MergeAll))
                 , ("M-m S-m",                withFocused (sendMessage . UnMergeAll))
                 , ("M-S-m",                  withFocused (sendMessage . UnMerge))
@@ -99,7 +99,7 @@ myLayout = avoidStruts
             onebig'        = OneBig (3/4) (3/4)
             tabbed'        = tabbed shrinkText myTabTheme
             three_col'     = ThreeColMid 2 (3/100) (2/3)
-            enableTabs x  = addTabs shrinkText myTabTheme subLayout [] Simplest x
+            enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
 
          
 -- tabbed theme

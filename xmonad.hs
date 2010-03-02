@@ -82,18 +82,18 @@ myLayout = avoidStruts
          
 -- tabbed theme
 myTabTheme = defaultTheme
-    { activeColor = "" ++ myFocusedBGColor ++ ""
+    { activeColor = "" ++ myDzenFGColor ++ ""
     , inactiveColor = "" ++ myDzenBGColor ++ ""
     , urgentColor = "" ++ myUrgentBGColor ++ ""
     , activeBorderColor = "" ++ myDzenFGColor ++ ""
-    , inactiveBorderColor = "#000000"
+    , inactiveBorderColor ="" ++ myDzenBGColor ++ ""
     , urgentBorderColor = "" ++ myDzenFGColor ++ ""
-    , activeTextColor = "" ++ myFocusedFGColor ++ ""
+    , activeTextColor = "#000000"
     , inactiveTextColor = "" ++ myDzenFGColor ++ ""
     , urgentTextColor = "" ++ myUrgentFGColor ++ ""
     , fontName = "" ++ myFont ++ ""
     --, decoWidth = ""
-    --, decoHeight = ""
+    , decoHeight = 14
     }
 
 -- manage hook

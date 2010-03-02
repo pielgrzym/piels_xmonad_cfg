@@ -15,6 +15,11 @@ import XMonad.Layout.Spiral
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.OneBig
+-- sublayouts
+import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
+import XMonad.Layout.WindowNavigation
+import XMonad.Layout.BoringWindows
+import XMonad.Layout.Simplest
 
 main= do 
         bar <- spawnPipe myStatusBar
@@ -36,7 +41,20 @@ main= do
                 [ ("M-r", spawn "dmenu_run")
                 , ("M-g", goToSelected defaultGSConfig)
                 , ("M-n", sendMessage MirrorShrink)
-                , ("M-m", sendMessage MirrorExpand)
+                , ("M-b", sendMessage MirrorExpand)
+                , ("M-M1-<Left>",    sendMessage Shrink)                     -- Resize Window
+                , ("M-M1-<Right>",   sendMessage Expand)
+                , ("M-M1-<Up>",              sendMessage MirrorExpand)
+                , ("M-M1-<Down>",    sendMessage MirrorShrink)
+                , ("M-m <Left>",             sendMessage $ pullGroup L)      -- Merge to Tabbed
+                , ("M-m <Right>",    sendMessage $ pullGroup R)
+                , ("M-m <Up>",               sendMessage $ pullGroup U)
+                , ("M-m <Down>",             sendMessage $ pullGroup D)
+                , ("M-m m",                  withFocused (sendMessage . MergeAll))
+                , ("M-m S-m",                withFocused (sendMessage . UnMergeAll))
+                , ("M-S-m",                  withFocused (sendMessage . UnMerge))
+                , ("M-S-,",                    onGroup W.focusUp')                     -- Move focus between tabs
+                , ("M-S-.",                    onGroup W.focusDown')           -- Move focus between tabs
                 ]
                 ++
                 [("M-"++m++[key], screenWorkspace sc >>= flip whenJust (windows . f))
@@ -65,7 +83,9 @@ mySeperatorColor = "#555555"
 
 -- layout hook
 myLayout = avoidStruts 
-        $ onWorkspace "1:im" three_col'
+        $ windowNavigation
+        $ boringWindows
+        $ onWorkspace "1:im" (three_col' ||| enableTabs three_col')
         $ onWorkspaces ["2:www", "9:vbox"] big_layouts
         $ onWorkspace "3:dev" (tabbed' ||| resizable_tall')
         $ onWorkspaces ["4:music", "8:fs"] small_layouts
@@ -79,6 +99,8 @@ myLayout = avoidStruts
             onebig'        = OneBig (3/4) (3/4)
             tabbed'        = tabbed shrinkText myTabTheme
             three_col'     = ThreeColMid 2 (3/100) (2/3)
+            enableTabs x  = addTabs shrinkText myTabTheme subLayout [] Simplest x
+
          
 -- tabbed theme
 myTabTheme = defaultTheme

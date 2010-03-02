@@ -20,10 +20,13 @@ import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll), default
 import XMonad.Layout.WindowNavigation
 import XMonad.Layout.BoringWindows
 import XMonad.Layout.Simplest
+-- urgency
+import XMonad.Hooks.UrgencyHook
 
 main= do 
         bar <- spawnPipe myStatusBar
-        xmonad $ defaultConfig 
+        xmonad $ withUrgencyHook NoUrgencyHook
+               $ defaultConfig 
                 { 
                 borderWidth          = 1
                 , terminal           = "urxvt"
@@ -42,6 +45,7 @@ main= do
                 , ("M-g", goToSelected defaultGSConfig)
                 , ("M-n", sendMessage MirrorShrink)
                 , ("M-b", sendMessage MirrorExpand)
+                , ("M-u",  focusUrgent)
                 , ("M-M1-h",    sendMessage Shrink)                     -- Resize Window
                 , ("M-M1-l",   sendMessage Expand)
                 , ("M-M1-k",              sendMessage MirrorExpand)
@@ -134,7 +138,7 @@ myXmobarPP h = defaultPP
     , ppHidden = wrap "" "" . \wsId -> dropIx wsId -- don't use <fc> here!!
     --, ppHiddenNoWindows = wrap ("<fc=" ++ myDzenFGColor ++ ">") "</fc>" . \wsId -> if (':' `elem` wsId) then drop 2 wsId else wsId
     , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("<fc=" ++ myDzenFGColor ++ ">") "</fc>" . dropIx $ wsId
-    , ppUrgent = wrap ("<fc=" ++ myUrgentFGColor ++ ">") "</fc>" . \wsId -> dropIx wsId
+    , ppUrgent = wrap ("<fc=" ++ myUrgentFGColor ++ ">!") "!</fc>" . \wsId -> dropIx wsId
     , ppSep = " "
     , ppWsSep = " "
     , ppTitle = xmobarColor (""++ myNormalFGColor ++ "") "" . wrap "< " " >"

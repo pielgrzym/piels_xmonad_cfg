@@ -62,6 +62,7 @@ myIconFGColor = "#777777"
 myIconBGColor = "#0f0f0f"
 mySeperatorColor = "#555555"
 
+
 -- layout hook
 myLayout = avoidStruts 
         $ onWorkspace "1:im" three_col'
@@ -76,9 +77,24 @@ myLayout = avoidStruts
             -- default tiling algorithm partitions the screen into two panes
             resizable_tall' = ResizableTall 1 (3/100) (1/2) [] 
             onebig'        = OneBig (3/4) (3/4)
-            tabbed'        = tabbed shrinkText defaultTheme
+            tabbed'        = tabbed shrinkText myTabTheme
             three_col'     = ThreeColMid 2 (3/100) (2/3)
          
+-- tabbed theme
+myTabTheme = defaultTheme
+    { activeColor = "" ++ myFocusedBGColor ++ ""
+    , inactiveColor = "" ++ myDzenBGColor ++ ""
+    , urgentColor = "" ++ myUrgentBGColor ++ ""
+    , activeBorderColor = "" ++ myDzenFGColor ++ ""
+    , inactiveBorderColor = "#000000"
+    , urgentBorderColor = "" ++ myDzenFGColor ++ ""
+    , activeTextColor = "" ++ myFocusedFGColor ++ ""
+    , inactiveTextColor = "" ++ myDzenFGColor ++ ""
+    , urgentTextColor = "" ++ myUrgentFGColor ++ ""
+    , fontName = "" ++ myFont ++ ""
+    --, decoWidth = ""
+    --, decoHeight = ""
+    }
 
 -- manage hook
 myManageHook = composeAll

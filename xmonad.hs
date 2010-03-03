@@ -22,6 +22,9 @@ import XMonad.Layout.BoringWindows
 import XMonad.Layout.Simplest
 -- urgency
 import XMonad.Hooks.UrgencyHook
+-- dmenu fun
+import XMonad.Util.Dmenu
+
 
 main= do 
         bar <- spawnPipe myStatusBar
@@ -41,11 +44,12 @@ main= do
                 }
                 `additionalKeysP`
                 (
-                [ ("M-r", spawn "dmenu_run")
+                [ ("M-r", spawn ("dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""))
                 , ("M-g", goToSelected defaultGSConfig)
                 , ("M-n", sendMessage MirrorShrink)
                 , ("M-b", sendMessage MirrorExpand)
                 , ("M-u",  focusUrgent)
+                --, ("M-e",  myDmenu >>= spawn)
                 , ("M-M1-h",    sendMessage Shrink)                     -- Resize Window
                 , ("M-M1-l",   sendMessage Expand)
                 , ("M-M1-k",              sendMessage MirrorExpand)

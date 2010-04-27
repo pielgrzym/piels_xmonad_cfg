@@ -8,6 +8,7 @@ import qualified XMonad.StackSet as W
 import XMonad.Actions.GridSelect
 import XMonad.Util.Loggers
 import XMonad.Util.Font
+import XMonad.Hooks.ManageHelpers ( isFullscreen, isDialog, doCenterFloat, doFullFloat )
 -- extra layouts
 import XMonad.Layout.PerWorkspace 
 import XMonad.Layout.ResizableTile
@@ -24,10 +25,14 @@ import XMonad.Layout.Simplest
 import XMonad.Hooks.UrgencyHook
 -- dmenu fun
 import XMonad.Util.Dmenu
+-- logers 4 dzen2
+import XMonad.Util.Loggers
 
 
 main= do 
         bar <- spawnPipe myStatusBar
+        clock <- spawnPipe "/home/pielgrzym/.xmonad/dzen.sh"
+        wall <- spawnPipe "nitrogen --restore"
         xmonad $ withUrgencyHook NoUrgencyHook
                $ defaultConfig 
                 { 
@@ -128,13 +133,15 @@ myTabTheme = defaultTheme
 
 -- manage hook
 myManageHook = composeAll
-    [ className =? "MPlayer"        --> doFloat
-    , className =? "SMPlayer"       --> doFloat
+    [ isFullscreen                  --> doFullFloat
+    , className =? "MPlayer"        --> doFloat
+    , className =? "Smplayer"       --> doFloat
     , className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
 
 myStatusBar = "xmobar"
+-- myStatusBar = "dzen2 -x '0' -y '0' -h '14' -w '600'  -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=" ++ myUrgentFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
@@ -156,6 +163,32 @@ myXmobarPP h = defaultPP
         "OneBig 0.75 0.75" -> "[B]"
         _ -> x
         )
+    , ppOutput = hPutStrLn h
+    }
+    where
+    dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
+    staticWs = ["1:im", "2:www", "3:dev", "4:music", "5:misc"]
+
+myDzenPP h = defaultPP
+    { ppCurrent = wrap ("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myFocusedBGColor ++ ")^p()^i(" ++ myIconDir ++ "/full.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    , ppVisible = wrap ("^fg(" ++ myNormalFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/empty.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    , ppHidden = wrap ("^i(" ++ myIconDir ++ "/empty.xbm) ") "^fg()^bg()^p()" . \wsId -> if (':' `elem` wsId) then drop 2 wsId else wsId -- don't use ^fg() here!!
+    --, ppHiddenNoWindows = wrap ("^fg(" ++ myDzenFGColor ++ ")^bg()^p()^i(" ++ myIconDir ++ "/corner.xbm)") "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("^fg(" ++ mySeperatorColor ++ ")^bg()^p()^i(" ++ myIconDir ++ "/empty.xbm) ") "^fg()^bg()^p()" . dropIx $ wsId
+    , ppUrgent = wrap (("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/bug_01.xbm) ^fg(" ++ myUrgentFGColor ++ ")")) "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    , ppSep = " "
+    , ppWsSep = " "
+    , ppTitle = dzenColor ("" ++ myNormalFGColor ++ "") "" . wrap "< " " >"
+    , ppLayout = dzenColor ("" ++ myNormalFGColor ++ "") "" .
+        (\x -> case x of
+        "Hinted Full" -> "^fg(" ++ myIconFGColor ++ ")^i(" ++ myIconDir ++ "/layout-full.xbm)"
+        "Hinted ResizableTall" -> "^fg(" ++ myIconFGColor ++ ")^i(" ++ myIconDir ++ "/layout-tall-right.xbm)"
+        "Hinted Mirror ResizableTall" -> "^fg(" ++ myIconFGColor ++ ")^i(" ++ myIconDir ++ "/layout-mirror-bottom.xbm)"
+        --"Hinted combining Tabbed Bottom Simplest and Full with DragPane  Vertical 0.1 0.8" -> "^fg(" ++ myIconFGColor ++ ")^i(" ++ myIconDir ++ "/layout-gimp.xbm)"
+        "Hinted combining Tabbed Bottom Simplest and Full with TwoPane using Not (Role \"gimp-toolbox\")" -> "^fg(" ++ myIconFGColor ++ ")^i(" ++ myIconDir ++ "/layout-gimp.xbm)"
+        _ -> x
+        )
+    --, ppExtras = [ battery, wrapL "^p(_RIGHT)" "" (date "%_d.%m.%Y %H:%M") ]
     , ppOutput = hPutStrLn h
     }
     where

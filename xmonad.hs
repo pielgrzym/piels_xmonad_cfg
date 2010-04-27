@@ -39,13 +39,13 @@ main= do
                 borderWidth          = 1
                 , terminal           = "urxvt"
                 , normalBorderColor  = "#262626"
-                , focusedBorderColor = "#ff5f00" 
+                , focusedBorderColor = myMainColor
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
                 , manageHook         = myManageHook <+> manageDocks
                 , layoutHook         = myLayout
-                --, logHook            = dynamicLogWithPP $ myDzenPP bar
-                , logHook            = dynamicLogWithPP $ myXmobarPP bar
+                , logHook            = dynamicLogWithPP $ myDzenPP bar
+                --, logHook            = dynamicLogWithPP $ myXmobarPP bar
                 }
                 `additionalKeysP`
                 (
@@ -79,15 +79,17 @@ main= do
 myWorkspaces = ["1:im", "2:www", "3:dev", "4:music", "5:misc", "6:gimp", "7:mplayer", "8:fs", "9:vbox"]
 -- Color, font and iconpath definitions:
 --myFont = "-xos4-terminus-medium-r-normal-*-14-*-*-*-c-*-iso10646-1"
-myFont = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-u"
-myIconDir = "/home/pielgrzym/.dzen"
-myDzenFGColor = "#ff5f00"
+
+myMainColor = "#ff5f00"
+myFont = "snap"
+myIconDir = "/home/pielgrzym/.xmonad/icons"
+myDzenFGColor = myMainColor
 myDzenBGColor = "#262626"
 myNormalFGColor = "#ffffff"
 myNormalBGColor = "#0f0f0f"
 myFocusedFGColor = "#f0f0f0"
 myFocusedBGColor = "#333333"
-myUrgentFGColor = "#0099ff"
+myUrgentFGColor = myMainColor
 myUrgentBGColor = "#0077ff"
 myIconFGColor = "#777777"
 myIconBGColor = "#0f0f0f"
@@ -140,8 +142,8 @@ myManageHook = composeAll
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
 
-myStatusBar = "xmobar"
--- myStatusBar = "dzen2 -x '0' -y '0' -h '14' -w '600'  -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
+-- myStatusBar = "xmobar"
+myStatusBar = "dzen2 -xs 1 -x '0' -y '0' -h '14' -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=" ++ myUrgentFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
@@ -170,12 +172,14 @@ myXmobarPP h = defaultPP
     staticWs = ["1:im", "2:www", "3:dev", "4:music", "5:misc"]
 
 myDzenPP h = defaultPP
-    { ppCurrent = wrap ("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myFocusedBGColor ++ ")^p()^i(" ++ myIconDir ++ "/full.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId
-    , ppVisible = wrap ("^fg(" ++ myNormalFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/empty.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    { ppCurrent = dzenColor myUrgentFGColor myFocusedBGColor . dzenIcon "full.xbm" . \wsId -> dropIx wsId
+    --, ppVisible = wrap ("^fg(" ++ myNormalFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/empty.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    , ppVisible = dzenColor myNormalFGColor myNormalBGColor  . dzenIcon "empty.xbm" . \wsId -> dropIx wsId
     , ppHidden = wrap ("^i(" ++ myIconDir ++ "/empty.xbm) ") "^fg()^bg()^p()" . \wsId -> if (':' `elem` wsId) then drop 2 wsId else wsId -- don't use ^fg() here!!
     --, ppHiddenNoWindows = wrap ("^fg(" ++ myDzenFGColor ++ ")^bg()^p()^i(" ++ myIconDir ++ "/corner.xbm)") "^fg()^bg()^p()" . \wsId -> dropIx wsId
     , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("^fg(" ++ mySeperatorColor ++ ")^bg()^p()^i(" ++ myIconDir ++ "/empty.xbm) ") "^fg()^bg()^p()" . dropIx $ wsId
-    , ppUrgent = wrap (("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/bug_01.xbm) ^fg(" ++ myUrgentFGColor ++ ")")) "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    , ppUrgent = dzenColor myUrgentFGColor myUrgentBGColor . \wsId -> dropIx wsId
+    --, ppUrgent = wrap (("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/bug_01.xbm) ^fg(" ++ myUrgentFGColor ++ ")")) "^fg()^bg()^p()" . \wsId -> dropIx wsId
     , ppSep = " "
     , ppWsSep = " "
     , ppTitle = dzenColor ("" ++ myNormalFGColor ++ "") "" . wrap "< " " >"
@@ -193,4 +197,5 @@ myDzenPP h = defaultPP
     }
     where
     dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
+    dzenIcon iconName outputText = " ^i(" ++ myIconDir ++ "/" ++ iconName ++ ") " ++ outputText
     staticWs = ["1:im", "2:www", "3:dev", "4:music", "5:misc"]

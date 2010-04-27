@@ -7,13 +7,16 @@
 # Configuration
 ##################################################################
 # Dzen's font
+
+MAIN_COLOR="#ff5f00"
 DZENFNT="snap"
 # Dzen's background colour
 DZENBG='#262626'
 # Dzen's forground colour
 DZENFG='#999999'
 # Dzen's X position
-DZENX=600
+DZENX=0
+#DZENX=600
 # Dzen's Y posit
 DZENY=0
 # Dzen's width
@@ -23,7 +26,7 @@ DZENALIGN=r
 # Gauge background colour
 GAUGEBG='#323232'
 # Gauge foreground colour
-GAUGEFG='#0069e0'
+GAUGEFG=$MAIN_COLOR
 # Path to your Dzen icons
 ICONPATH=/home/pielgrzym/.xmonad/icons
 # Network interface
@@ -215,7 +218,7 @@ while :; do
         TXR=$(printf "%d\n" $(echo "($TXBN - $TXB) / 1024/${SLEEP}" | bc))
 
         # Print out 
-        echo " ^fg(#0069e0)^p(0)^i(${ICONPATH}/cpu.xbm) ^fg()${PCPU} ^fg(#80AA83)^i(${ICONPATH}/temp.xbm) ^fg()${PCPUTEMP} ^fg(#80AA83)^p(0)^i(${ICONPATH}/net_down_02.xbm)^fg()${RXR}kB/s ^fg(orange3)^p(0)^i(${ICONPATH}/net_up_02.xbm)^fg()${TXR}kB/s^fg() ^fg() ^fg(#0069e0)^p(0)^i(${ICONPATH}/spkr_01.xbm) ${PVOLUME} ^fg(#FFFFFF)${PDATE} ^bg(#0069e0) ${PTIME} "
+        echo " ^fg($MAIN_COLOR)^p(0)^i(${ICONPATH}/cpu.xbm) ^fg()${PCPU} ^fg(#80AA83)^i(${ICONPATH}/temp.xbm) ^fg()${PCPUTEMP} ^fg(#80AA83)^p(0)^i(${ICONPATH}/net_down_02.xbm)^fg()${RXR}kB/s ^fg(orange3)^p(0)^i(${ICONPATH}/net_up_02.xbm)^fg()${TXR}kB/s^fg() ^fg() ^fg($MAIN_COLOR)^p(0)^i(${ICONPATH}/spkr_01.xbm) ${PVOLUME} ^fg(#FFFFFF)${PDATE} ^bg($MAIN_COLOR) ${PTIME} "
 
         # Reset old rates
         RXB=$RXBN; TXB=$TXBN
@@ -229,4 +232,4 @@ while :; do
         sleep $SLEEP
 
         # Pass it to dzen
-done | dzen2 -bg $DZENBG -fg $DZENFG -x $DZENX -y $DZENY -ta $DZENALIGN -h 14 -p -e "button2=exec:$TOGGLE;button4=exec:$CI;button5=exec:$CD" -fn $DZENFNT
+done | dzen2 -xs 2 -bg $DZENBG -fg $DZENFG -x $DZENX -y $DZENY -ta $DZENALIGN -h 14 -p -fn $DZENFNT -dock

@@ -27,7 +27,7 @@ GAUGEFG='#0069e0'
 # Path to your Dzen icons
 ICONPATH=/home/pielgrzym/.xmonad/icons
 # Network interface
-INTERFACE=wlan0
+INTERFACE=eth0
 # Sound device for volume control
 SNDDEVICE=Master
 # Date formating
@@ -171,23 +171,23 @@ PTIME=$(ftime)
 PCPU=$(fcpu)
 PCPUTEMP=$(fcputemp)
 PVOLUME=$(fvolume)
-BATTERY=$(fbattery)
-WIFI=$(fwifi)
+#BATTERY=$(fbattery)
+#WIFI=$(fwifi)
 
 # Main loop
 while :; do
 
         PCPU=$(fcpu)
 
-        if [ $WIFICOUNTER -ge $WIFIIVAL ]; then
-                WIFI=$(fwifi)
-                WIFICOUNTER=0
-        fi
+        #if [ $WIFICOUNTER -ge $WIFIIVAL ]; then
+                #WIFI=$(fwifi)
+                #WIFICOUNTER=0
+        #fi
 
-        if [ $BATTCOUNTER -ge $BATIVAL ]; then
-                BATTERY=$(fbattery)
-                BATTCOUNTER=0
-        fi
+        #if [ $BATTCOUNTER -ge $BATIVAL ]; then
+                #BATTERY=$(fbattery)
+                #BATTCOUNTER=0
+        #fi
 
         if [ $DATECOUNTER -ge $DATEIVAL ]; then
                 PDATE=$(fdate)
@@ -215,7 +215,7 @@ while :; do
         TXR=$(printf "%d\n" $(echo "($TXBN - $TXB) / 1024/${SLEEP}" | bc))
 
         # Print out 
-        echo " ^fg(#0069e0)^p(0)^i(${ICONPATH}/cpu.xbm) ^fg()${PCPU} ${WIFI} ${BATTERY} ^fg(#80AA83)^i(${ICONPATH}/temp.xbm) ^fg()${PCPUTEMP} ^fg(#80AA83)^p(0)^i(${ICONPATH}/net_down_02.xbm)^fg()${RXR}kB/s ^fg(orange3)^p(0)^i(${ICONPATH}/net_up_02.xbm)^fg()${TXR}kB/s^fg() ^fg() ^fg(#0069e0)^p(0)^i(${ICONPATH}/spkr_01.xbm) ${PVOLUME} ^fg(#FFFFFF)${PDATE} ^bg(#0069e0) ${PTIME} "
+        echo " ^fg(#0069e0)^p(0)^i(${ICONPATH}/cpu.xbm) ^fg()${PCPU} ^fg(#80AA83)^i(${ICONPATH}/temp.xbm) ^fg()${PCPUTEMP} ^fg(#80AA83)^p(0)^i(${ICONPATH}/net_down_02.xbm)^fg()${RXR}kB/s ^fg(orange3)^p(0)^i(${ICONPATH}/net_up_02.xbm)^fg()${TXR}kB/s^fg() ^fg() ^fg(#0069e0)^p(0)^i(${ICONPATH}/spkr_01.xbm) ${PVOLUME} ^fg(#FFFFFF)${PDATE} ^bg(#0069e0) ${PTIME} "
 
         # Reset old rates
         RXB=$RXBN; TXB=$TXBN
@@ -223,8 +223,8 @@ while :; do
         DATECOUNTER=$((DATECOUNTER+1))
         CPUTEMPCOUNTER=$((CPUTEMPCOUNTER+1))
         VOLUMECOUNTER=$((VOLUMECOUNTER+1))
-        BATTCOUNTER=$((BATTCOUNTER+1))
-        WIFICOUNTER=$((WIFICOUNTER+1))
+        #BATTCOUNTER=$((BATTCOUNTER+1))
+        #WIFICOUNTER=$((WIFICOUNTER+1))
 
         sleep $SLEEP
 

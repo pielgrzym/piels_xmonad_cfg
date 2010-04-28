@@ -56,7 +56,7 @@ main= do
                 --`removeKeysP` ["M-C-" ++ [n] | n <- ['1'..'9']]
                 `additionalKeysP`
                 (
-                [ ("M-r",       spawn ("dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""))
+                [ ("M-r",       spawn (myDmenu))
                 , ("M-g",       goToSelected defaultGSConfig)
                 --, ("M-n",     sendMessage MirrorShrink)
                 , ("M-n",       nextWS)
@@ -92,6 +92,7 @@ main= do
                 `removeKeysP` [ "M-w", "M-e" ] 
 
 myWorkspaces = ["1:im", "2:www", "3:dev", "4:music", "5:misc", "6:gimp", "7:mplayer", "8:fs", "9:vbox"]
+myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""
 
 -- Color, font and iconpath definitions:
 myMainColor = "#ff5f00"

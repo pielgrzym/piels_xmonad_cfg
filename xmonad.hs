@@ -52,7 +52,7 @@ main= do
                 --, logHook            = dynamicLogWithPP $ myXmobarPP bar
                 }
                 --`removeKeysP` ["M-" ++ [n] | n <- ['1'..'9']]
-                `removeKeysP` ["M-S-" ++ [n] | n <- ['1'..'9']]
+                --`removeKeysP` ["M-S-" ++ [n] | n <- ['1'..'9']]
                 --`removeKeysP` ["M-C-" ++ [n] | n <- ['1'..'9']]
                 `additionalKeysP`
                 (

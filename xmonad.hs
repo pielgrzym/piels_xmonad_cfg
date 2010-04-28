@@ -143,7 +143,7 @@ myManageHook = composeAll
     , resource  =? "kdesktop"       --> doIgnore ]
 
 -- myStatusBar = "xmobar"
-myStatusBar = "dzen2 -xs 1 -x '0' -y '0' -h '14' -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
+myStatusBar = "dzen2 -xs 1 -x '0' -y '0' -h '12' -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=" ++ myUrgentFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId

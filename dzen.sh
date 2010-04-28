@@ -9,7 +9,7 @@
 # Dzen's font
 
 MAIN_COLOR="#ff5f00"
-DZENFNT="snap"
+DZENFNT="-*-snap-*-*-*-*-12-*-*-*-*-*-*-*"
 # Dzen's background colour
 DZENBG='#262626'
 # Dzen's forground colour

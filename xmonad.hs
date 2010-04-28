@@ -87,10 +87,10 @@ myDzenFGColor = myMainColor
 myDzenBGColor = "#262626"
 myNormalFGColor = "#ffffff"
 myNormalBGColor = "#0f0f0f"
-myFocusedFGColor = "#f0f0f0"
+myFocusedFGColor = myMainColor
 myFocusedBGColor = "#333333"
-myUrgentFGColor = myMainColor
-myUrgentBGColor = "#0077ff"
+myUrgentFGColor = "#000000"
+myUrgentBGColor = myMainColor
 myIconFGColor = "#777777"
 myIconBGColor = "#0f0f0f"
 mySeperatorColor = "#555555"
@@ -172,11 +172,11 @@ myXmobarPP h = defaultPP
     staticWs = ["1:im", "2:www", "3:dev", "4:music", "5:misc"]
 
 myDzenPP h = defaultPP
-    { ppCurrent = dzenColor myUrgentFGColor myFocusedBGColor . dzenIcon "full.xbm" . \wsId -> dropIx wsId
-    , ppVisible = dzenColor myNormalFGColor myNormalBGColor  . dzenIcon "empty.xbm" . \wsId -> dropIx wsId
-    , ppHidden =  dzenIcon "empty.xbm" . \wsId -> dropIx wsId 
-    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else dzenColor mySeperatorColor myDzenBGColor . dzenIcon "empty.xbm" . dropIx $ wsId
-    , ppUrgent = dzenColor myUrgentFGColor myUrgentBGColor . dzenIcon "info_01.xbm" . \wsId -> dropIx wsId
+    { ppCurrent = dzenColor myFocusedFGColor myFocusedBGColor . dzenIcon "has_win.xbm" . \wsId -> dropIx wsId
+    , ppVisible = dzenColor myNormalFGColor myNormalBGColor  . dzenIcon "has_win.xbm" . \wsId -> dropIx wsId
+    , ppHidden =  dzenIcon "has_win.xbm" . \wsId -> dropIx wsId 
+    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else dzenColor mySeperatorColor myDzenBGColor . dzenIcon "has_win_nv.xbm" . dropIx $ wsId
+    , ppUrgent = dzenColor myUrgentFGColor myUrgentBGColor . dzenIcon "has_win.xbm" . dzenStrip . \wsId -> dropIx wsId
     , ppSep = " "
     , ppWsSep = " "
     , ppTitle = dzenColor ("" ++ myNormalFGColor ++ "") "" . wrap "< " " >"
@@ -187,6 +187,7 @@ myDzenPP h = defaultPP
         "Mirror ResizableTall" -> "[-]"
         "Tabbed Simplest" -> "[T]"
         "ThreeCol" -> "[3]"
+        "Tabbed ThreeCol" -> "[%]"
         "OneBig 0.75 0.75" -> "[B]"
         _ -> x
         )
@@ -194,5 +195,5 @@ myDzenPP h = defaultPP
     }
     where
     dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
-    dzenIcon iconName outputText = " ^i(" ++ myIconDir ++ "/" ++ iconName ++ ") " ++ outputText
+    dzenIcon iconName outputText = "^i(" ++ myIconDir ++ "/" ++ iconName ++ ")" ++ outputText
     staticWs = ["1:im", "2:www", "3:dev", "4:music", "5:misc"]

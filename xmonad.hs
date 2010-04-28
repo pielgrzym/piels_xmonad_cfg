@@ -56,39 +56,44 @@ main= do
                 --`removeKeysP` ["M-C-" ++ [n] | n <- ['1'..'9']]
                 `additionalKeysP`
                 (
-                [ ("M-r", spawn ("dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""))
-                , ("M-g", goToSelected defaultGSConfig)
-                --, ("M-n", sendMessage MirrorShrink)
-                , ("M-n", nextWS)
-                , ("M-p", prevWS)
-                , ("M-b", sendMessage MirrorExpand)
-                , ("M-u",  focusUrgent)
-                --, ("M-e",  myDmenu >>= spawn)
-                , ("M-M1-h",    sendMessage Shrink)                     -- Resize Window
-                , ("M-M1-l",   sendMessage Expand)
-                , ("M-M1-k",              sendMessage MirrorExpand)
+                [ ("M-r",       spawn ("dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""))
+                , ("M-g",       goToSelected defaultGSConfig)
+                --, ("M-n",     sendMessage MirrorShrink)
+                , ("M-n",       nextWS)
+                , ("M-p",       prevWS)
+                , ("M-b",       sendMessage MirrorExpand)
+                , ("M-u",       focusUrgent)
+                , ("M-S-c",     kill1)  -- remove a window copy or kill window otherwise
+                , ("M-M1-h",    sendMessage Shrink) -- Resize Window
+                , ("M-M1-l",    sendMessage Expand)
+                , ("M-M1-k",    sendMessage MirrorExpand)
                 , ("M-M1-j",    sendMessage MirrorShrink)
-                , ("M-m h",             sendMessage $ pullGroup L)      -- Merge to Tabbed
-                , ("M-m l",    sendMessage $ pullGroup R)
-                , ("M-m k",               sendMessage $ pullGroup U)
-                , ("M-m j",             sendMessage $ pullGroup D)
-                , ("M-m m",                  withFocused (sendMessage . MergeAll))
-                , ("M-m S-m",                withFocused (sendMessage . UnMergeAll))
-                , ("M-S-m",                  withFocused (sendMessage . UnMerge))
-                , ("M-S-,",                    onGroup W.focusUp')                     -- Move focus between tabs
-                , ("M-S-.",                    onGroup W.focusDown')           -- Move focus between tabs
+                , ("M-m h",     sendMessage $ pullGroup L) -- Merge to Tabbed
+                , ("M-m l",     sendMessage $ pullGroup R)
+                , ("M-m k",     sendMessage $ pullGroup U)
+                , ("M-m j",     sendMessage $ pullGroup D)
+                , ("M-m m",     withFocused (sendMessage . MergeAll))
+                , ("M-m S-m",   withFocused (sendMessage . UnMergeAll))
+                , ("M-S-m",     withFocused (sendMessage . UnMerge))
+                , ("M-S-,",     onGroup W.focusUp') -- Move focus between tabs
+                , ("M-S-.",     onGroup W.focusDown') -- Move focus between tabs
                 ]
                 ++
+                -- below: screen swithing with 'i' and 'o'
                 [("M-"++m++[key], screenWorkspace sc >>= flip whenJust (windows . f))
                         | (f, m) <- [(W.view, ""), (W.shift, "S-"), (copy, "C-")]
                         , (key, sc) <- zip "io" [0 .. ]]
+                ++
+                -- below: workspace greedy switch with M-[0..9], move to ws with M-S-[0..9] and copy to ws with M-C-[0..9]
+                [("M-"++m++[key], action tag)
+                        | (tag, key) <- zip myWorkspaces ['1'..'9']
+                        , (action, m) <- [(windows . W.greedyView, ""), (windows . W.shift, "S-"), (windows . copy, "C-")]]
                 )
                 `removeKeysP` [ "M-w", "M-e" ] 
 
 myWorkspaces = ["1:im", "2:www", "3:dev", "4:music", "5:misc", "6:gimp", "7:mplayer", "8:fs", "9:vbox"]
--- Color, font and iconpath definitions:
---myFont = "-xos4-terminus-medium-r-normal-*-14-*-*-*-c-*-iso10646-1"
 
+-- Color, font and iconpath definitions:
 myMainColor = "#ff5f00"
 myFont = "snap"
 myIconDir = "/home/pielgrzym/.xmonad/icons"

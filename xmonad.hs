@@ -9,6 +9,10 @@ import XMonad.Actions.GridSelect
 import XMonad.Util.Loggers
 import XMonad.Util.Font
 import XMonad.Hooks.ManageHelpers ( isFullscreen, isDialog, doCenterFloat, doFullFloat )
+import XMonad.Layout.NoBorders
+import XMonad.Actions.CycleWS
+-- copy windows! tag-like functionality
+import XMonad.Actions.CopyWindow
 -- extra layouts
 import XMonad.Layout.PerWorkspace 
 import XMonad.Layout.ResizableTile
@@ -47,11 +51,16 @@ main= do
                 , logHook            = dynamicLogWithPP $ myDzenPP bar
                 --, logHook            = dynamicLogWithPP $ myXmobarPP bar
                 }
+                --`removeKeysP` ["M-" ++ [n] | n <- ['1'..'9']]
+                `removeKeysP` ["M-S-" ++ [n] | n <- ['1'..'9']]
+                --`removeKeysP` ["M-C-" ++ [n] | n <- ['1'..'9']]
                 `additionalKeysP`
                 (
                 [ ("M-r", spawn ("dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""))
                 , ("M-g", goToSelected defaultGSConfig)
-                , ("M-n", sendMessage MirrorShrink)
+                --, ("M-n", sendMessage MirrorShrink)
+                , ("M-n", nextWS)
+                , ("M-p", prevWS)
                 , ("M-b", sendMessage MirrorExpand)
                 , ("M-u",  focusUrgent)
                 --, ("M-e",  myDmenu >>= spawn)
@@ -71,10 +80,10 @@ main= do
                 ]
                 ++
                 [("M-"++m++[key], screenWorkspace sc >>= flip whenJust (windows . f))
-                        | (f, m) <- [(W.view, ""), (W.shift, "S-")]
+                        | (f, m) <- [(W.view, ""), (W.shift, "S-"), (copy, "C-")]
                         , (key, sc) <- zip "io" [0 .. ]]
                 )
-                `removeKeysP` [ "M-w", "M-e", "M-p" ]
+                `removeKeysP` [ "M-w", "M-e" ] 
 
 myWorkspaces = ["1:im", "2:www", "3:dev", "4:music", "5:misc", "6:gimp", "7:mplayer", "8:fs", "9:vbox"]
 -- Color, font and iconpath definitions:
@@ -89,7 +98,7 @@ myNormalFGColor = "#ffffff"
 myNormalBGColor = "#0f0f0f"
 myFocusedFGColor = myMainColor
 myFocusedBGColor = "#333333"
-myUrgentFGColor = "#000000"
+myUrgentFGColor = "#ffffff"
 myUrgentBGColor = myMainColor
 myIconFGColor = "#777777"
 myIconBGColor = "#0f0f0f"
@@ -98,11 +107,12 @@ mySeperatorColor = "#555555"
 
 -- layout hook
 myLayout = avoidStruts 
+        $ smartBorders
         $ windowNavigation
         $ boringWindows
         $ onWorkspace "1:im" (three_col' ||| enableTabs three_col')
         $ onWorkspaces ["2:www", "9:vbox"] big_layouts
-        $ onWorkspace "3:dev" (tabbed' ||| resizable_tall')
+        $ onWorkspace "3:dev" (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall'))
         $ onWorkspaces ["4:music", "8:fs"] small_layouts
         $ all_layouts
         where
@@ -185,6 +195,8 @@ myDzenPP h = defaultPP
         "Full" -> "[ ]"
         "ResizableTall" -> "[|]"
         "Mirror ResizableTall" -> "[-]"
+        "Tabbed ResizableTall" -> "[=]"
+        "Tabbed Mirror ResizableTall" -> "[:]"
         "Tabbed Simplest" -> "[T]"
         "ThreeCol" -> "[3]"
         "Tabbed ThreeCol" -> "[%]"

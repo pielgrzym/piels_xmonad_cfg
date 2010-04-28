@@ -173,26 +173,23 @@ myXmobarPP h = defaultPP
 
 myDzenPP h = defaultPP
     { ppCurrent = dzenColor myUrgentFGColor myFocusedBGColor . dzenIcon "full.xbm" . \wsId -> dropIx wsId
-    --, ppVisible = wrap ("^fg(" ++ myNormalFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/empty.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId
     , ppVisible = dzenColor myNormalFGColor myNormalBGColor  . dzenIcon "empty.xbm" . \wsId -> dropIx wsId
-    , ppHidden = wrap ("^i(" ++ myIconDir ++ "/empty.xbm) ") "^fg()^bg()^p()" . \wsId -> if (':' `elem` wsId) then drop 2 wsId else wsId -- don't use ^fg() here!!
-    --, ppHiddenNoWindows = wrap ("^fg(" ++ myDzenFGColor ++ ")^bg()^p()^i(" ++ myIconDir ++ "/corner.xbm)") "^fg()^bg()^p()" . \wsId -> dropIx wsId
-    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("^fg(" ++ mySeperatorColor ++ ")^bg()^p()^i(" ++ myIconDir ++ "/empty.xbm) ") "^fg()^bg()^p()" . dropIx $ wsId
-    , ppUrgent = dzenColor myUrgentFGColor myUrgentBGColor . \wsId -> dropIx wsId
-    --, ppUrgent = wrap (("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/bug_01.xbm) ^fg(" ++ myUrgentFGColor ++ ")")) "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    , ppHidden =  dzenIcon "empty.xbm" . \wsId -> dropIx wsId 
+    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else dzenColor mySeperatorColor myDzenBGColor . dzenIcon "empty.xbm" . dropIx $ wsId
+    , ppUrgent = dzenColor myUrgentFGColor myUrgentBGColor . dzenIcon "info_01.xbm" . \wsId -> dropIx wsId
     , ppSep = " "
     , ppWsSep = " "
     , ppTitle = dzenColor ("" ++ myNormalFGColor ++ "") "" . wrap "< " " >"
     , ppLayout = dzenColor ("" ++ myNormalFGColor ++ "") "" .
         (\x -> case x of
-        "Hinted Full" -> "^fg(" ++ myIconFGColor ++ ")^i(" ++ myIconDir ++ "/layout-full.xbm)"
-        "Hinted ResizableTall" -> "^fg(" ++ myIconFGColor ++ ")^i(" ++ myIconDir ++ "/layout-tall-right.xbm)"
-        "Hinted Mirror ResizableTall" -> "^fg(" ++ myIconFGColor ++ ")^i(" ++ myIconDir ++ "/layout-mirror-bottom.xbm)"
-        --"Hinted combining Tabbed Bottom Simplest and Full with DragPane  Vertical 0.1 0.8" -> "^fg(" ++ myIconFGColor ++ ")^i(" ++ myIconDir ++ "/layout-gimp.xbm)"
-        "Hinted combining Tabbed Bottom Simplest and Full with TwoPane using Not (Role \"gimp-toolbox\")" -> "^fg(" ++ myIconFGColor ++ ")^i(" ++ myIconDir ++ "/layout-gimp.xbm)"
+        "Full" -> "[ ]"
+        "ResizableTall" -> "[|]"
+        "Mirror ResizableTall" -> "[-]"
+        "Tabbed Simplest" -> "[T]"
+        "ThreeCol" -> "[3]"
+        "OneBig 0.75 0.75" -> "[B]"
         _ -> x
         )
-    --, ppExtras = [ battery, wrapL "^p(_RIGHT)" "" (date "%_d.%m.%Y %H:%M") ]
     , ppOutput = hPutStrLn h
     }
     where

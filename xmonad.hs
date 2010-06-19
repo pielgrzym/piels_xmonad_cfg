@@ -63,6 +63,15 @@ main= do
                 , ("M-p",       prevWS)
                 , ("M-b",       sendMessage MirrorExpand)
                 , ("M-u",       focusUrgent)
+                -- cmus control
+                , ("M-z",       spawn "cmus-remote --prev")
+                , ("M-x",       spawn "cmus-remote --prev")
+                , ("M-c",       spawn "cmus-remote --pause")
+                , ("M-v",       spawn "cmus-remote --stop")
+                , ("M-b",       spawn "cmus-remote --next")
+                , ("M--",       spawn "cmus-remote --vol -10%")
+                , ("M-=",       spawn "cmus-remote --vol +10%")
+                -- eof cmus control
                 , ("M-S-c",     kill1)  -- remove a window copy or kill window otherwise
                 , ("M-M1-h",    sendMessage Shrink) -- Resize Window
                 , ("M-M1-l",    sendMessage Expand)
@@ -212,6 +221,6 @@ myDzenPP h = defaultPP
     , ppOutput = hPutStrLn h
     }
     where
-    dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
-    dzenIcon iconName outputText = "^i(" ++ myIconDir ++ "/" ++ iconName ++ ")" ++ outputText
-    staticWs = ["1:im", "2:www", "3:dev", "4:music", "5:misc"]
+            dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
+            dzenIcon iconName outputText = "^i(" ++ myIconDir ++ "/" ++ iconName ++ ")" ++ outputText
+            staticWs = ["1:im", "2:www", "3:dev", "4:music", "5:misc"]

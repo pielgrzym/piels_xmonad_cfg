@@ -54,6 +54,7 @@ main= do
                 --`removeKeysP` ["M-" ++ [n] | n <- ['1'..'9']]
                 --`removeKeysP` ["M-S-" ++ [n] | n <- ['1'..'9']]
                 --`removeKeysP` ["M-C-" ++ [n] | n <- ['1'..'9']]
+                `removeKeysP` [ "M-w", "M-e", "M-b" ] 
                 `additionalKeysP`
                 (
                 [ ("M-r",       spawn (myDmenu))
@@ -65,10 +66,9 @@ main= do
                 , ("M-u",       focusUrgent)
                 -- cmus control
                 , ("M-z",       spawn "cmus-remote --prev")
-                , ("M-x",       spawn "cmus-remote --prev")
+                , ("M-x",       spawn "cmus-remote --play")
                 , ("M-c",       spawn "cmus-remote --pause")
                 , ("M-v",       spawn "cmus-remote --stop")
-                , ("M-b",       spawn "cmus-remote --next")
                 , ("M--",       spawn "cmus-remote --vol -10%")
                 , ("M-=",       spawn "cmus-remote --vol +10%")
                 -- eof cmus control
@@ -98,7 +98,6 @@ main= do
                         | (tag, key) <- zip myWorkspaces ['1'..'9']
                         , (action, m) <- [(windows . W.greedyView, ""), (windows . W.shift, "S-"), (windows . copy, "C-")]]
                 )
-                `removeKeysP` [ "M-w", "M-e" ] 
 
 myWorkspaces = ["1:im", "2:www", "3:dev", "4:music", "5:misc", "6:gimp", "7:mplayer", "8:fs", "9:vbox"]
 myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""

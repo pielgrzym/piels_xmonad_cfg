@@ -66,8 +66,8 @@ main= do
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
+                , ("M-;",       withFocused (sendMessage . maximizeRestore))
                 -- cmus control
-                , ("M-;",     withFocused (sendMessage . maximizeRestore))
                 , ("M-z",       spawn "cmus-remote --prev")
                 , ("M-x",       spawn "cmus-remote --play")
                 , ("M-c",       spawn "cmus-remote --pause")
@@ -76,20 +76,18 @@ main= do
                 , ("M-=",       spawn "cmus-remote --vol +10%")
                 -- eof cmus control
                 , ("M-S-c",     kill1)  -- remove a window copy or kill window otherwise
-                , ("M-M1-h",    sendMessage Shrink) -- Resize Window
-                , ("M-M1-l",    sendMessage Expand)
                 , ("M-M1-k",    sendMessage MirrorExpand)
                 , ("M-M1-j",    sendMessage MirrorShrink)
-                , ("M-m M-h",     sendMessage $ pullGroup L) -- Merge to Tabbed
-                , ("M-m M-l",     sendMessage $ pullGroup R)
-                , ("M-m M-k",     sendMessage $ pullGroup U)
-                , ("M-m M-j",     sendMessage $ pullGroup D)
+                , ("M-m M-h",   sendMessage $ pullGroup L) -- Merge to Tabbed
+                , ("M-m M-l",   sendMessage $ pullGroup R)
+                , ("M-m M-k",   sendMessage $ pullGroup U)
+                , ("M-m M-j",   sendMessage $ pullGroup D)
                 , ("M-m m",     withFocused (sendMessage . MergeAll))
                 , ("M-m S-m",   withFocused (sendMessage . UnMergeAll))
                 , ("M-S-m",     withFocused (sendMessage . UnMerge))
                 , ("M-m M-h",   withFocused (sendMessage . SubMessage (SomeMessage Shrink) ))
                 , ("M-m M-l",   withFocused (sendMessage . SubMessage (SomeMessage Expand) ))
-                , ("M-m M-space",   withFocused (sendMessage . SubMessage (SomeMessage NextLayout) ))
+                --, ("M-m M-space",   withFocused (sendMessage . SubMessage (SomeMessage NextLayout) ))
                 , ("M-S-,",     onGroup W.focusUp') -- Move focus between tabs
                 , ("M-S-.",     onGroup W.focusDown') -- Move focus between tabs
                 ]

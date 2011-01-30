@@ -138,7 +138,7 @@ myLayout = avoidStruts
             -- complex layout definitions:
             resizable_tall' = spacing 2 $ ResizableTall 1 (3/100) (1/2) []
             tabbed'        = withBorder 1 $ tabbed shrinkText myTabTheme
-            three_col'     = spacing 2 $ ThreeColMid 2 (3/100) (2/3)
+            three_col'     = spacing 2 $ ThreeColMid 2 (3/100) (4/5)
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
             magni_tall = magnifier resizable_tall'
             -- two_pane_tall = subLayout [0,1,2,1] (Tall 1 0.2 0.5 ||| tabbed' ||| Circle) $ resizable_tall'

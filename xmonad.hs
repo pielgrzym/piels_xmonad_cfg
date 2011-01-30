@@ -20,11 +20,16 @@ import XMonad.Layout.Spiral
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.OneBig
+import XMonad.Layout.Magnifier
+import XMonad.Layout.Maximize
+import XMonad.Layout.TwoPane
+import XMonad.Layout.Circle
 -- sublayouts
-import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
+import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll, SubMessage), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
 import XMonad.Layout.WindowNavigation
 import XMonad.Layout.BoringWindows
 import XMonad.Layout.Simplest
+import XMonad.Layout.Spacing
 -- urgency
 import XMonad.Hooks.UrgencyHook
 -- dmenu fun
@@ -35,14 +40,14 @@ import XMonad.Util.Loggers
 
 main= do 
         bar <- spawnPipe myStatusBar
-        clock <- spawnPipe "/home/pielgrzym/.xmonad/dzen.sh"
+--        clock <- spawnPipe "/home/pielgrzym/.xmonad/dzen.sh"
         wall <- spawnPipe "nitrogen --restore"
         xmonad $ withUrgencyHook NoUrgencyHook
                $ defaultConfig 
                 { 
-                borderWidth          = 1
+                borderWidth          = 3
                 , terminal           = "urxvt"
-                , normalBorderColor  = "#262626"
+                , normalBorderColor  = "#555555"
                 , focusedBorderColor = myMainColor
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
@@ -62,9 +67,9 @@ main= do
                 --, ("M-n",     sendMessage MirrorShrink)
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
-                , ("M-b",       sendMessage MirrorExpand)
                 , ("M-u",       focusUrgent)
                 -- cmus control
+                , ("M-;",     withFocused (sendMessage . maximizeRestore))
                 , ("M-z",       spawn "cmus-remote --prev")
                 , ("M-x",       spawn "cmus-remote --play")
                 , ("M-c",       spawn "cmus-remote --pause")
@@ -77,13 +82,16 @@ main= do
                 , ("M-M1-l",    sendMessage Expand)
                 , ("M-M1-k",    sendMessage MirrorExpand)
                 , ("M-M1-j",    sendMessage MirrorShrink)
-                , ("M-m h",     sendMessage $ pullGroup L) -- Merge to Tabbed
-                , ("M-m l",     sendMessage $ pullGroup R)
-                , ("M-m k",     sendMessage $ pullGroup U)
-                , ("M-m j",     sendMessage $ pullGroup D)
+                , ("M-m M-h",     sendMessage $ pullGroup L) -- Merge to Tabbed
+                , ("M-m M-l",     sendMessage $ pullGroup R)
+                , ("M-m M-k",     sendMessage $ pullGroup U)
+                , ("M-m M-j",     sendMessage $ pullGroup D)
                 , ("M-m m",     withFocused (sendMessage . MergeAll))
                 , ("M-m S-m",   withFocused (sendMessage . UnMergeAll))
                 , ("M-S-m",     withFocused (sendMessage . UnMerge))
+                , ("M-m M-h",   withFocused (sendMessage . SubMessage (SomeMessage Shrink) ))
+                , ("M-m M-l",   withFocused (sendMessage . SubMessage (SomeMessage Expand) ))
+                , ("M-m M-space",   withFocused (sendMessage . SubMessage (SomeMessage NextLayout) ))
                 , ("M-S-,",     onGroup W.focusUp') -- Move focus between tabs
                 , ("M-S-.",     onGroup W.focusDown') -- Move focus between tabs
                 ]
@@ -99,7 +107,7 @@ main= do
                         , (action, m) <- [(windows . W.greedyView, ""), (windows . W.shift, "S-"), (windows . copy, "C-")]]
                 )
 
-myWorkspaces = ["1:im", "2:www", "3:dev", "4:music", "5:misc", "6:gimp", "7:mplayer", "8:fs", "9:vbox"]
+myWorkspaces = ["1:im", "2:local", "3:temp", "4:var", "5:books", "6:music", "7:web", "8:dev", "9:remote"]
 myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""
 
 -- Color, font and iconpath definitions:
@@ -123,22 +131,21 @@ mySeperatorColor = "#555555"
 myLayout = avoidStruts 
         $ smartBorders
         $ windowNavigation
+        $ maximize
         $ boringWindows
-        $ onWorkspace "1:im" (three_col' ||| enableTabs three_col')
-        $ onWorkspaces ["2:www", "9:vbox"] big_layouts
-        $ onWorkspace "3:dev" (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall'))
-        $ onWorkspaces ["4:music", "8:fs"] small_layouts
-        $ all_layouts
+        $ onWorkspace "1:im" (enableTabs three_col')
+        $ onWorkspace "7:web" big_layouts
+        $ default_layouts
         where
-            all_layouts = (resizable_tall' ||| Mirror resizable_tall' ||| Full ||| tabbed' ||| three_col' ||| onebig')
-            big_layouts = (Full ||| tabbed' ||| onebig' ||| resizable_tall' ||| Mirror resizable_tall' )
-            small_layouts = (onebig' ||| resizable_tall' ||| Mirror resizable_tall')
-            -- default tiling algorithm partitions the screen into two panes
-            resizable_tall' = ResizableTall 1 (3/100) (1/2) [] 
-            onebig'        = OneBig (3/4) (3/4)
+            default_layouts = (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall') ||| magni_tall)
+            big_layouts = (tabbed' ||| Full ||| magni_tall)
+            -- complex layout definitions:
+            resizable_tall' = spacing 2 $ ResizableTall 1 (3/100) (1/2) []
             tabbed'        = tabbed shrinkText myTabTheme
-            three_col'     = ThreeColMid 2 (3/100) (2/3)
+            three_col'     = spacing 2 $ ThreeColMid 2 (3/100) (2/3)
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
+            magni_tall = magnifier resizable_tall'
+            -- two_pane_tall = subLayout [0,1,2,1] (Tall 1 0.2 0.5 ||| tabbed' ||| Circle) $ resizable_tall'
 
          
 -- tabbed theme
@@ -167,7 +174,8 @@ myManageHook = composeAll
     , resource  =? "kdesktop"       --> doIgnore ]
 
 -- myStatusBar = "xmobar"
-myStatusBar = "dzen2 -xs 1 -x '0' -y '0' -h '12' -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
+myStatusBar = "dzen2 -x '0' -y '0' -h '12' -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
+--myStatusBar = "dzen2 -xs 1 -x '0' -y '0' -h '12' -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=" ++ myUrgentFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
@@ -193,7 +201,7 @@ myXmobarPP h = defaultPP
     }
     where
     dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
-    staticWs = ["1:im", "2:www", "3:dev", "4:music", "5:misc"]
+    staticWs = ["1:im", "2:local", "7:web", "8:dev", "9:remote"]
 
 myDzenPP h = defaultPP
     { ppCurrent = dzenColor myFocusedFGColor myFocusedBGColor . dzenIcon "has_win.xbm" . \wsId -> dropIx wsId
@@ -222,4 +230,4 @@ myDzenPP h = defaultPP
     where
             dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
             dzenIcon iconName outputText = "^i(" ++ myIconDir ++ "/" ++ iconName ++ ")" ++ outputText
-            staticWs = ["1:im", "2:www", "3:dev", "4:music", "5:misc"]
+            staticWs = ["1:im", "2:local", "7:web", "8:dev", "9:remote"]

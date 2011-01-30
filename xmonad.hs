@@ -22,8 +22,6 @@ import XMonad.Layout.ThreeColumns
 import XMonad.Layout.OneBig
 import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
-import XMonad.Layout.TwoPane
-import XMonad.Layout.Circle
 -- sublayouts
 import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll, SubMessage), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
 import XMonad.Layout.WindowNavigation

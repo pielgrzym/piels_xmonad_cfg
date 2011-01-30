@@ -139,7 +139,7 @@ myLayout = avoidStruts
             big_layouts = (tabbed' ||| Full ||| magni_tall)
             -- complex layout definitions:
             resizable_tall' = spacing 2 $ ResizableTall 1 (3/100) (1/2) []
-            tabbed'        = tabbed shrinkText myTabTheme
+            tabbed'        = withBorder 1 $ tabbed shrinkText myTabTheme
             three_col'     = spacing 2 $ ThreeColMid 2 (3/100) (2/3)
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
             magni_tall = magnifier resizable_tall'
@@ -159,7 +159,7 @@ myTabTheme = defaultTheme
     , urgentTextColor = "" ++ myUrgentFGColor ++ ""
     , fontName = "" ++ myFont ++ ""
     --, decoWidth = ""
-    , decoHeight = 14
+    , decoHeight = 16
     }
 
 -- manage hook

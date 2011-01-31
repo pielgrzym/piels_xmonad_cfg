@@ -35,11 +35,14 @@ import XMonad.Util.Dmenu
 -- logers 4 dzen2
 import XMonad.Util.Loggers
 
+import XMonad.Layout.Monitor
+import XMonad.Layout.LayoutModifier
 
 main= do 
         bar <- spawnPipe myStatusBar
 --        clock <- spawnPipe "/home/pielgrzym/.xmonad/dzen.sh"
         wall <- spawnPipe "nitrogen --restore"
+        conky_clock <- spawnPipe "killall conky; conky"
         xmonad $ withUrgencyHook NoUrgencyHook
                $ defaultConfig 
                 { 
@@ -49,7 +52,7 @@ main= do
                 , focusedBorderColor = myMainColor
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
-                , manageHook         = myManageHook <+> manageDocks
+                , manageHook         = myManageHook <+> manageDocks <+> manageMonitor clock
                 , layoutHook         = myLayout
                 , logHook            = dynamicLogWithPP $ myDzenPP bar
                 --, logHook            = dynamicLogWithPP $ myXmobarPP bar
@@ -67,6 +70,7 @@ main= do
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
                 , ("M-;",       withFocused (sendMessage . maximizeRestore))
+                , ("M-'",       broadcastMessage ToggleMonitor >> refresh)
                 -- cmus control
                 , ("M-z",       spawn "cmus-remote --prev")
                 , ("M-x",       spawn "cmus-remote --play")
@@ -106,6 +110,20 @@ main= do
 myWorkspaces = ["1:im", "2:local", "3:temp", "4:var", "5:books", "6:music", "7:web", "8:dev", "9:remote"]
 myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""
 
+clock = monitor {
+        -- Cairo-clock creates 2 windows with the same classname, thus also using title
+                prop = ClassName "Conky" `And` Title "ZEGAR"
+                -- rectangle 150x150 in lower right corner, assuming 1280x800 resolution
+                , rect = Rectangle (1600-151) (1200-101) 150 100
+                -- avoid flickering
+                , persistent = True
+                -- make the window transparent
+                -- hide on start
+                , visible = False
+                -- assign it a name to be able to toggle it independently of others
+                , name = "clock"
+}
+
 -- Color, font and iconpath definitions:
 myMainColor = "#ff5f00"
 myFont = "snap"
@@ -125,6 +143,7 @@ mySeperatorColor = "#555555"
 
 -- layout hook
 myLayout = avoidStruts 
+        $ ModifiedLayout clock
         $ smartBorders
         $ windowNavigation
         $ maximize
@@ -166,6 +185,7 @@ myManageHook = composeAll
     , className =? "MPlayer"        --> doFloat
     , className =? "Smplayer"       --> doFloat
     , className =? "Gimp"           --> doFloat
+    , className =? "Conky"          --> doIgnore
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
 

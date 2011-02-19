@@ -1,4 +1,7 @@
-import XMonad
+-- import XMonad
+import XMonad hiding ( (|||) )
+-- JumpToLayout setup
+import XMonad.Layout.LayoutCombinators
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Util.Run(spawnPipe)
@@ -21,6 +24,7 @@ import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
+import XMonad.Layout.Circle
 -- sublayouts
 import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll, SubMessage), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
 import XMonad.Layout.WindowNavigation
@@ -47,7 +51,7 @@ main= do
                 { 
                 borderWidth          = 3
                 , terminal           = "urxvt"
-                , normalBorderColor  = "#008800"
+                , normalBorderColor  = "#004400"
                 , focusedBorderColor = myMainColor
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
@@ -81,6 +85,11 @@ main= do
                 , ("M-=",       spawn "cmus-remote --vol +10%")
                 -- eof cmus control
                 , ("M-S-c",     kill1)  -- remove a window copy or kill window otherwise
+                , ("M-<F8>",      sendMessage $ JumpToLayout "Circle")
+                , ("M-<F9>",      sendMessage $ JumpToLayout "Tabbed Simplest")
+                , ("M-<F10>",      sendMessage $ JumpToLayout "Tabbed Spacing 2 ResizableTall")
+                , ("M-<F11>",      sendMessage $ JumpToLayout "Magnifier Spacing 2 ResizableTall")
+                , ("M-<F12>",      sendMessage $ JumpToLayout "Magnifier Mirror Spacing 2 ResizableTall")
                 , ("M-M1-k",    sendMessage MirrorExpand)
                 , ("M-M1-j",    sendMessage MirrorShrink)
                 , ("M-m M-h",   sendMessage $ pullGroup L) -- Merge to Tabbed
@@ -106,9 +115,15 @@ main= do
                 [("M-"++m++[key], action tag)
                         | (tag, key) <- zip myWorkspaces ['1'..'9']
                         , (action, m) <- [(windows . W.greedyView, ""), (windows . W.shift, "S-"), (windows . copy, "C-")]]
+                ++
+                -- below: workspace greedy switch with M-[0..9], move to ws with M-S-[0..9] and copy to ws with M-C-[0..9]
+                [("M1-"++m++[key], action tag)
+                        | (tag, key) <- zip  [ myWorkspaces !! x | x <- [9..17]] ['1'..'9']
+                        , (action, m) <- [(windows . W.greedyView, ""), (windows . W.shift, "S-"), (windows . copy, "C-")]]
                 )
 
-myWorkspaces = ["1:im", "2:local", "3:temp", "4:var", "5:books", "6:music", "7:web", "8:dev", "9:remote"]
+myWorkspaces = ["1:im", "2:local", "3:io", "4:books1", "5:books2", "6:music", "7:web", "8:gauss", "9:remote",
+                "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9"]
 myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""
 
 clock = monitor {
@@ -152,7 +167,7 @@ myLayout = avoidStruts
         $ onWorkspace "7:web" big_layouts
         $ default_layouts
         where
-            default_layouts = (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall') ||| magni_tall)
+            default_layouts = (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall') ||| magni_tall ||| mirror_magni_tall ||| Circle)
             big_layouts = (tabbed' ||| Full ||| magni_tall)
             -- complex layout definitions:
             resizable_tall' = spacing 2 $ ResizableTall 1 (3/100) (1/2) []
@@ -160,6 +175,7 @@ myLayout = avoidStruts
             three_col'     = spacing 2 $ ThreeColMid 2 (3/100) (4/5)
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
             magni_tall = magnifier resizable_tall'
+            mirror_magni_tall = magnifier (Mirror resizable_tall')
             -- two_pane_tall = subLayout [0,1,2,1] (Tall 1 0.2 0.5 ||| tabbed' ||| Circle) $ resizable_tall'
 
          
@@ -217,7 +233,7 @@ myXmobarPP h = defaultPP
     }
     where
     dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
-    staticWs = ["1:im", "2:local", "7:web", "8:dev", "9:remote"]
+    staticWs = ["1:im", "2:local", "7:web", "8:gauss", "9:remote"]
 
 myDzenPP h = defaultPP
     { ppCurrent = dzenColor myFocusedFGColor myFocusedBGColor . dzenIcon "has_win.xbm" . \wsId -> dropIx wsId
@@ -246,4 +262,4 @@ myDzenPP h = defaultPP
     where
             dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
             dzenIcon iconName outputText = "^i(" ++ myIconDir ++ "/" ++ iconName ++ ")" ++ outputText
-            staticWs = ["1:im", "2:local", "7:web", "8:dev", "9:remote"]
+            staticWs = ["1:im", "2:local", "7:web", "8:gauss", "9:remote"]

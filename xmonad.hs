@@ -19,7 +19,6 @@ import XMonad.Layout.ResizableTile
 import XMonad.Layout.Spiral
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns
-import XMonad.Layout.OneBig
 import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
 -- sublayouts
@@ -40,19 +39,20 @@ import XMonad.Layout.LayoutModifier
 
 main= do 
         bar <- spawnPipe myStatusBar
---        clock <- spawnPipe "/home/pielgrzym/.xmonad/dzen.sh"
+        bar2 <- spawnPipe "/home/pielgrzym/.xmonad/dzen.sh"
         wall <- spawnPipe "nitrogen --restore"
-        conky_clock <- spawnPipe "killall conky; conky"
+        -- conky_clock <- spawnPipe "killall conky; conky"
         xmonad $ withUrgencyHook NoUrgencyHook
                $ defaultConfig 
                 { 
                 borderWidth          = 3
                 , terminal           = "urxvt"
-                , normalBorderColor  = "#555555"
+                , normalBorderColor  = "#008800"
                 , focusedBorderColor = myMainColor
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
-                , manageHook         = myManageHook <+> manageDocks <+> manageMonitor clock
+                , manageHook         = myManageHook <+> manageDocks 
+                -- , manageHook         = myManageHook <+> manageDocks <+> manageMonitor clock
                 , layoutHook         = myLayout
                 , logHook            = dynamicLogWithPP $ myDzenPP bar
                 --, logHook            = dynamicLogWithPP $ myXmobarPP bar
@@ -75,6 +75,7 @@ main= do
                 , ("M-z",       spawn "cmus-remote --prev")
                 , ("M-x",       spawn "cmus-remote --play")
                 , ("M-c",       spawn "cmus-remote --pause")
+                , ("M-e",       spawn "cmus-remote --pause")
                 , ("M-v",       spawn "cmus-remote --stop")
                 , ("M--",       spawn "cmus-remote --vol -10%")
                 , ("M-=",       spawn "cmus-remote --vol +10%")
@@ -112,7 +113,7 @@ myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGC
 
 clock = monitor {
         -- Cairo-clock creates 2 windows with the same classname, thus also using title
-                prop = ClassName "Conky" `And` Title "ZEGAR"
+                prop = ClassName "urxvt" `And` Title "ZEGAR"
                 -- rectangle 150x150 in lower right corner, assuming 1280x800 resolution
                 , rect = Rectangle (1600-151) (1200-101) 150 100
                 -- avoid flickering
@@ -125,7 +126,7 @@ clock = monitor {
 }
 
 -- Color, font and iconpath definitions:
-myMainColor = "#ff5f00"
+myMainColor = "#00aa00"
 myFont = "snap"
 myIconDir = "/home/pielgrzym/.xmonad/icons"
 myDzenFGColor = myMainColor
@@ -139,7 +140,6 @@ myUrgentBGColor = myMainColor
 myIconFGColor = "#777777"
 myIconBGColor = "#0f0f0f"
 mySeperatorColor = "#555555"
-
 
 -- layout hook
 myLayout = avoidStruts 
@@ -185,7 +185,7 @@ myManageHook = composeAll
     , className =? "MPlayer"        --> doFloat
     , className =? "Smplayer"       --> doFloat
     , className =? "Gimp"           --> doFloat
-    , className =? "Conky"          --> doIgnore
+    , title     =? "ZEGAR"          --> doIgnore
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
 

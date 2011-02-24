@@ -38,21 +38,29 @@ import XMonad.Util.Loggers
 import XMonad.Layout.Monitor
 import XMonad.Layout.LayoutModifier
 
+import qualified Data.Map as M
+import XMonad.Actions.TopicSpace
+import XMonad.Prompt
+import XMonad.Prompt.Workspace
+
 main= do 
         bar <- spawnPipe myStatusBar
---        clock <- spawnPipe "/home/pielgrzym/.xmonad/dzen.sh"
-        wall <- spawnPipe "nitrogen --restore"
-        conky_clock <- spawnPipe "killall conky; conky"
+        spawn "/home/pielgrzym/.xmonad/dzen.sh"
+        spawn "unclutter -idle 3"
+        spawn "syndaemon -k -d -i 2 -t"
+        --urxvtd <- spawnPipe "urxvtd -q -f"
+        checkTopicConfig myTopics myTopicConfig
         xmonad $ withUrgencyHook NoUrgencyHook
                $ defaultConfig 
                 { 
                 borderWidth          = 3
-                , terminal           = "urxvt"
-                , normalBorderColor  = "#555555"
-                , focusedBorderColor = myMainColor
+                , terminal           = "xterm"
+                --, terminal           = "urxvtc"
+                , normalBorderColor  = "#262626"
+                , focusedBorderColor = "#0069e0" 
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
-                , manageHook         = myManageHook <+> manageDocks <+> manageMonitor clock
+                , manageHook         = myManageHook <+> manageDocks -- <+> manageMonitor clock
                 , layoutHook         = myLayout
                 , logHook            = dynamicLogWithPP $ myDzenPP bar
                 --, logHook            = dynamicLogWithPP $ myXmobarPP bar
@@ -94,6 +102,8 @@ main= do
                 --, ("M-m M-space",   withFocused (sendMessage . SubMessage (SomeMessage NextLayout) ))
                 , ("M-S-,",     onGroup W.focusUp') -- Move focus between tabs
                 , ("M-S-.",     onGroup W.focusDown') -- Move focus between tabs
+                , ("M-y",     promptedGoto) -- TS goto
+                , ("M-S-y",     promptedShift) -- TS goto
                 ]
                 ++
                 -- below: screen swithing with 'i' and 'o'
@@ -104,10 +114,72 @@ main= do
                 -- below: workspace greedy switch with M-[0..9], move to ws with M-S-[0..9] and copy to ws with M-C-[0..9]
                 [("M-"++m++[key], action tag)
                         | (tag, key) <- zip myWorkspaces ['1'..'9']
-                        , (action, m) <- [(windows . W.greedyView, ""), (windows . W.shift, "S-"), (windows . copy, "C-")]]
+                        , (action, m) <- [(switchTopic myTopicConfig, ""), (windows . W.shift, "S-"), (windows . copy, "C-")]]
                 )
 
-myWorkspaces = ["1:im", "2:local", "3:temp", "4:var", "5:books", "6:music", "7:web", "8:dev", "9:remote"]
+myWorkspaces = myTopics
+
+myTopics :: [Topic]
+myTopics =
+   [ "net" -- the first one
+   , "im"
+   , "proj", "debug"
+   , "doc", "music", "web"
+   , "admin"
+   , "vbox"
+   -- >9 topics:
+   , "euler", "newton", "fermat", "rzedzian"
+   , "xmonad"
+   , "mov"
+   , "gimp"
+   , "gothic"
+   ]
+
+myTopicConfig :: TopicConfig
+myTopicConfig = TopicConfig
+    { topicDirs = M.fromList $
+        [ ("net", "/etc")
+        , ("proj", "proj")
+        , ("debug", "proj")
+        , ("xmonad", "~/.xmonad")
+        , ("mov", "mov")
+        , ("music", "muza")
+        , ("doc", "Dropbox")
+        , ("gothic", "~/gothic/g")
+        ]
+    , defaultTopicAction = const $ spawnShell >*> 2
+    , defaultTopic = "net"
+    , maxTopicHistory = 10
+    , topicActions = M.fromList $
+        [ ("net",       spawnShell >> 
+                        spawnShellIn "/etc/openvpn")
+        , ("xmonad",    spawnShellIn ".xmonad" >>
+                        spawnShellIn ".xmonad")
+        , ("web",       spawn "opera")
+        , ("admin",     spawnShell >*> 3 >>
+                        spawn "jumanji 172.29.0.1:8080")
+        , ("mov",       spawnShell)
+        , ("gothic",    spawnShell)
+        , ("doc",       spawnShell >>
+                        spawnShellIn "Dropbox")
+        , ("vbox",      spawn "VirtualBox")
+        , ("gimp",      spawn "gimp")
+        ]
+    }
+
+
+myShell = "zsh"
+spawnShell :: X ()
+spawnShell = currentTopicDir myTopicConfig >>= spawnShellIn
+spawnShellIn :: Dir -> X ()
+spawnShellIn dir = spawn $ "xterm -e \"cd " ++ dir ++ "; " ++ myShell ++ "\""
+goto :: Topic -> X ()
+goto = switchTopic myTopicConfig
+promptedGoto :: X ()
+promptedGoto = workspacePrompt defaultXPConfig goto
+promptedShift :: X ()
+promptedShift = workspacePrompt defaultXPConfig $ windows . W.shift
+
 myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""
 
 clock = monitor {
@@ -125,17 +197,18 @@ clock = monitor {
 }
 
 -- Color, font and iconpath definitions:
-myMainColor = "#ff5f00"
+--myFont = "-xos4-terminus-medium-r-normal-*-14-*-*-*-c-*-iso10646-1"
 myFont = "snap"
+--myFont = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-u"
 myIconDir = "/home/pielgrzym/.xmonad/icons"
-myDzenFGColor = myMainColor
+myDzenFGColor = "#0069e0"
 myDzenBGColor = "#262626"
 myNormalFGColor = "#ffffff"
 myNormalBGColor = "#0f0f0f"
-myFocusedFGColor = myMainColor
+myFocusedFGColor = "#f0f0f0"
 myFocusedBGColor = "#333333"
-myUrgentFGColor = "#ffffff"
-myUrgentBGColor = myMainColor
+myUrgentFGColor = "#0099ff"
+myUrgentBGColor = "#0077ff"
 myIconFGColor = "#777777"
 myIconBGColor = "#0f0f0f"
 mySeperatorColor = "#555555"
@@ -143,13 +216,13 @@ mySeperatorColor = "#555555"
 
 -- layout hook
 myLayout = avoidStruts 
-        $ ModifiedLayout clock
+        -- $ ModifiedLayout clock
         $ smartBorders
         $ windowNavigation
         $ maximize
         $ boringWindows
-        $ onWorkspace "1:im" (enableTabs three_col')
-        $ onWorkspace "7:web" big_layouts
+        $ onWorkspace "im" (enableTabs three_col')
+        $ onWorkspace "web" big_layouts
         $ default_layouts
         where
             default_layouts = (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall') ||| magni_tall)
@@ -174,7 +247,7 @@ myTabTheme = defaultTheme
     , activeTextColor = "#000000"
     , inactiveTextColor = "" ++ myDzenFGColor ++ ""
     , urgentTextColor = "" ++ myUrgentFGColor ++ ""
-    , fontName = "" ++ myFont ++ ""
+    , fontName = "snap"
     --, decoWidth = ""
     , decoHeight = 16
     }
@@ -184,14 +257,14 @@ myManageHook = composeAll
     [ isFullscreen                  --> doFullFloat
     , className =? "MPlayer"        --> doFloat
     , className =? "Smplayer"       --> doFloat
+    , className =? "feh"            --> doFloat
     , className =? "Gimp"           --> doFloat
     , className =? "Conky"          --> doIgnore
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
 
--- myStatusBar = "xmobar"
-myStatusBar = "dzen2 -x '0' -y '0' -h '12' -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
---myStatusBar = "dzen2 -xs 1 -x '0' -y '0' -h '12' -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
+myStatusBar = "dzen2 -x '0' -y '0' -h '14' -w '600'  -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
+--myStatusBar = "xmobar"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=" ++ myUrgentFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
@@ -220,11 +293,12 @@ myXmobarPP h = defaultPP
     staticWs = ["1:im", "2:local", "7:web", "8:dev", "9:remote"]
 
 myDzenPP h = defaultPP
-    { ppCurrent = dzenColor myFocusedFGColor myFocusedBGColor . dzenIcon "has_win.xbm" . \wsId -> dropIx wsId
-    , ppVisible = dzenColor myNormalFGColor myNormalBGColor  . dzenIcon "has_win.xbm" . \wsId -> dropIx wsId
-    , ppHidden =  dzenIcon "has_win.xbm" . \wsId -> dropIx wsId 
-    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else dzenColor mySeperatorColor myDzenBGColor . dzenIcon "has_win_nv.xbm" . dropIx $ wsId
-    , ppUrgent = dzenColor myUrgentFGColor myUrgentBGColor . dzenIcon "has_win.xbm" . dzenStrip . \wsId -> dropIx wsId
+    { ppCurrent = wrap ("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myFocusedBGColor ++ ")^p()^i(" ++ myIconDir ++ "/full.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    , ppVisible = wrap ("^fg(" ++ myNormalFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/empty.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    , ppHidden = wrap ("^i(" ++ myIconDir ++ "/empty.xbm) ") "^fg()^bg()^p()" . \wsId -> if (':' `elem` wsId) then drop 2 wsId else wsId -- don't use ^fg() here!!
+    --, ppHiddenNoWindows = wrap ("^fg(" ++ myDzenFGColor ++ ")^bg()^p()^i(" ++ myIconDir ++ "/corner.xbm)") "^fg()^bg()^p()" . \wsId -> dropIx wsId
+    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("^fg(" ++ mySeperatorColor ++ ")^bg()^p()^i(" ++ myIconDir ++ "/empty.xbm) ") "^fg()^bg()^p()" . dropIx $ wsId
+    , ppUrgent = wrap (("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/bug_01.xbm) ^fg(" ++ myUrgentFGColor ++ ")")) "^fg()^bg()^p()" . \wsId -> dropIx wsId
     , ppSep = " "
     , ppWsSep = " "
     , ppTitle = dzenColor ("" ++ myNormalFGColor ++ "") "" . wrap "< " " >"
@@ -246,4 +320,4 @@ myDzenPP h = defaultPP
     where
             dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
             dzenIcon iconName outputText = "^i(" ++ myIconDir ++ "/" ++ iconName ++ ")" ++ outputText
-            staticWs = ["1:im", "2:local", "7:web", "8:dev", "9:remote"]
+            staticWs = ["net", "im", "web", "admin"]

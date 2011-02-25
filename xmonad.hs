@@ -252,7 +252,7 @@ greenColorizer = colorRangeFromClassName
 -- layout hook
 myLayout = avoidStruts 
         $ smartBorders
-        $ windowNavigation
+        $ configurableNavigation noNavigateBorders
         $ maximize
         $ boringWindows
         $ onWorkspace "im" (enableTabs three_col')

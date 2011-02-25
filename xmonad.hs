@@ -8,7 +8,6 @@ import System.IO
 import qualified XMonad.StackSet as W
 import XMonad.Actions.GridSelect
 import XMonad.Util.Loggers
-import XMonad.Util.Font
 import XMonad.Hooks.ManageHelpers ( isFullscreen, isDialog, doCenterFloat, doFullFloat )
 import XMonad.Layout.NoBorders
 import XMonad.Actions.CycleWS
@@ -17,10 +16,8 @@ import XMonad.Actions.CopyWindow
 -- extra layouts
 import XMonad.Layout.PerWorkspace 
 import XMonad.Layout.ResizableTile
-import XMonad.Layout.Spiral
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns
-import XMonad.Layout.OneBig
 import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
 import XMonad.Layout.Circle
@@ -32,13 +29,6 @@ import XMonad.Layout.Simplest
 import XMonad.Layout.Spacing
 -- urgency
 import XMonad.Hooks.UrgencyHook
--- dmenu fun
-import XMonad.Util.Dmenu
--- logers 4 dzen2
-import XMonad.Util.Loggers
-
-import XMonad.Layout.Monitor
-import XMonad.Layout.LayoutModifier
 
 import qualified Data.Map as M
 import XMonad.Actions.TopicSpace
@@ -174,7 +164,8 @@ myTopicConfig = TopicConfig
         , ("doc", "Dropbox")
         , ("gothic", "~/gothic/g")
         ]
-    , defaultTopicAction = const $ spawnShell
+    , defaultTopicAction = const (return ())
+    --, defaultTopicAction = const $ spawnShell
     , defaultTopic = "net"
     , maxTopicHistory = 10
     , topicActions = M.fromList $
@@ -331,33 +322,3 @@ myXmobarPP h = defaultPP
     where
     dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
     staticWs = ["start", "web", "proj", "@", "admin"]
-
-myDzenPP h = defaultPP
-    { ppCurrent = wrap ("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myFocusedBGColor ++ ")^p()^i(" ++ myIconDir ++ "/full.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId
-    , ppVisible = wrap ("^fg(" ++ myNormalFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/empty.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId
-    , ppHidden = wrap ("^i(" ++ myIconDir ++ "/empty.xbm) ") "^fg()^bg()^p()" . \wsId -> if (':' `elem` wsId) then drop 2 wsId else wsId -- don't use ^fg() here!!
-    --, ppHiddenNoWindows = wrap ("^fg(" ++ myDzenFGColor ++ ")^bg()^p()^i(" ++ myIconDir ++ "/corner.xbm)") "^fg()^bg()^p()" . \wsId -> dropIx wsId
-    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("^fg(" ++ mySeperatorColor ++ ")^bg()^p()^i(" ++ myIconDir ++ "/empty.xbm) ") "^fg()^bg()^p()" . dropIx $ wsId
-    , ppUrgent = wrap (("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myNormalBGColor ++ ")^p()^i(" ++ myIconDir ++ "/bug_01.xbm) ^fg(" ++ myUrgentFGColor ++ ")")) "^fg()^bg()^p()" . \wsId -> dropIx wsId
-    , ppSep = " "
-    , ppWsSep = " "
-    , ppTitle = dzenColor ("" ++ myNormalFGColor ++ "") "" . wrap "< " " >"
-    , ppLayout = dzenColor ("" ++ myNormalFGColor ++ "") "" .
-        (\x -> case x of
-        "Full" -> "[ ]"
-        "ResizableTall" -> "[|]"
-        "Mirror ResizableTall" -> "[-]"
-        "Tabbed ResizableTall" -> "[=]"
-        "Tabbed Mirror ResizableTall" -> "[:]"
-        "Tabbed Simplest" -> "[T]"
-        "ThreeCol" -> "[3]"
-        "Tabbed ThreeCol" -> "[%]"
-        "OneBig 0.75 0.75" -> "[B]"
-        _ -> x
-        )
-    , ppOutput = hPutStrLn h
-    }
-    where
-            dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
-            dzenIcon iconName outputText = "^i(" ++ myIconDir ++ "/" ++ iconName ++ ")" ++ outputText
-            staticWs = ["net", "im", "web", "admin"]

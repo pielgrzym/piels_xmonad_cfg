@@ -45,12 +45,6 @@ import XMonad.Actions.TopicSpace
 import XMonad.Prompt
 import XMonad.Prompt.Workspace
 import XMonad.Actions.FloatKeys
--- todo:
--- * xmobar
--- * prompt - szatki
--- * grid select - szatki
--- * lepsze pomysły na topic spaces
--- * nowe layouty dla ts
 main= do 
         bar <- spawnPipe myStatusBar
         spawn "unclutter -idle 3"
@@ -79,7 +73,7 @@ main= do
                 `additionalKeysP`
                 (
                 [ ("M-r",       spawn (myDmenu))
-                , ("M-g",       goToSelected defaultGSConfig) -- window grid
+                , ("M-g",       goToSelected $ gsconfig2 greenColorizer) -- window grid
                 --, ("M-n",     sendMessage MirrorShrink)
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
@@ -241,6 +235,18 @@ myUrgentBGColor = "#0077ff"
 myIconFGColor = "#777777"
 myIconBGColor = "#0f0f0f"
 mySeperatorColor = "#555555"
+
+gsconfig2 colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 30, gs_cellwidth = 100 }
+greenColorizer = colorRangeFromClassName
+                      black            -- lowest inactive bg
+                      green            -- highest inactive bg
+                      yellow           -- active bg
+                      white            -- inactive fg
+                      black            -- active fg
+   where black = minBound
+         white = maxBound
+         yellow = (0xFF,0xFF,0x70)
+         green = (0x00,0xFF,0x00)
 
 
 -- layout hook

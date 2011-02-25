@@ -211,10 +211,7 @@ myXPConfig = defaultXPConfig {
 }
 
 -- Color, font and iconpath definitions:
---myFont = "-xos4-terminus-medium-r-normal-*-14-*-*-*-c-*-iso10646-1"
 myFont = "snap"
---myFont = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-u"
-myIconDir = "/home/pielgrzym/.xmonad/icons"
 myDzenFGColor = "green"
 myDzenBGColor = "#262626"
 myNormalFGColor = "#ffffff"
@@ -288,17 +285,16 @@ myManageHook = composeAll
     , className =? "Gimp"           --> doFloat
     , className =? "Conky"          --> doIgnore
     , className =? "Skype"          --> doShift "im"
+    , className =? "Pidgin"         --> doShift "im"
     , resource  =? "desktop_window" --> doIgnore
-    , resource  =? "kdesktop"       --> doIgnore ]
+    ]
 
---myStatusBar = "dzen2 -x '0' -y '0' -h '14' -w '600'  -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
 myStatusBar = "xmobar -x 1"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=" ++ myUrgentFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
     , ppVisible = wrap ("[<fc=" ++ myNormalFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
     , ppHidden = wrap "" "" . \wsId -> dropIx wsId -- don't use <fc> here!!
-    --, ppHiddenNoWindows = wrap ("<fc=" ++ myDzenFGColor ++ ">") "</fc>" . \wsId -> if (':' `elem` wsId) then drop 2 wsId else wsId
     , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("<fc=" ++ mySeperatorColor ++ ">") "</fc>" . dropIx $ wsId
     , ppUrgent = wrap ("<fc=" ++ myUrgentFGColor ++ ">!") "!</fc>" . \wsId -> dropIx wsId
     , ppSep = " "

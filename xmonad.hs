@@ -42,10 +42,15 @@ import qualified Data.Map as M
 import XMonad.Actions.TopicSpace
 import XMonad.Prompt
 import XMonad.Prompt.Workspace
-
+-- todo:
+-- * xmobar
+-- * prompt - szatki
+-- * grid select - szatki
+-- * lepsze pomysły na topic spaces
+-- * nowe layouty dla ts
 main= do 
         bar <- spawnPipe myStatusBar
-        spawn "/home/pielgrzym/.xmonad/dzen.sh"
+        -- spawn "/home/pielgrzym/.xmonad/dzen.sh"
         spawn "unclutter -idle 3"
         spawn "syndaemon -k -d -i 2 -t"
         --urxvtd <- spawnPipe "urxvtd -q -f"
@@ -62,8 +67,8 @@ main= do
                 , workspaces         = myWorkspaces
                 , manageHook         = myManageHook <+> manageDocks -- <+> manageMonitor clock
                 , layoutHook         = myLayout
-                , logHook            = dynamicLogWithPP $ myDzenPP bar
-                --, logHook            = dynamicLogWithPP $ myXmobarPP bar
+                --, logHook            = dynamicLogWithPP $ myDzenPP bar
+                , logHook            = dynamicLogWithPP $ myXmobarPP bar
                 }
                 --`removeKeysP` ["M-" ++ [n] | n <- ['1'..'9']]
                 --`removeKeysP` ["M-S-" ++ [n] | n <- ['1'..'9']]
@@ -72,13 +77,12 @@ main= do
                 `additionalKeysP`
                 (
                 [ ("M-r",       spawn (myDmenu))
-                , ("M-g",       goToSelected defaultGSConfig)
+                , ("M-y",       goToSelected defaultGSConfig)
                 --, ("M-n",     sendMessage MirrorShrink)
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
                 , ("M-;",       withFocused (sendMessage . maximizeRestore))
-                , ("M-'",       broadcastMessage ToggleMonitor >> refresh)
                 -- cmus control
                 , ("M-z",       spawn "cmus-remote --prev")
                 , ("M-x",       spawn "cmus-remote --play")
@@ -102,8 +106,15 @@ main= do
                 --, ("M-m M-space",   withFocused (sendMessage . SubMessage (SomeMessage NextLayout) ))
                 , ("M-S-,",     onGroup W.focusUp') -- Move focus between tabs
                 , ("M-S-.",     onGroup W.focusDown') -- Move focus between tabs
-                , ("M-y",     promptedGoto) -- TS goto
-                , ("M-S-y",     promptedShift) -- TS goto
+                -- topic space related keybindings
+                , ("M-g",       promptedGoto) -- TS goto
+                , ("M-S-g",     promptedShift) -- TS shift
+                , ("M-'",       toggleWS) -- switch to previous topic
+                -- window nav
+                , ("C-l",       sendMessage $ Go R)
+                , ("C-h",       sendMessage $ Go L)
+                , ("C-j",       sendMessage $ Go D)
+                , ("C-k",       sendMessage $ Go U)
                 ]
                 ++
                 -- below: screen swithing with 'i' and 'o'
@@ -216,13 +227,13 @@ mySeperatorColor = "#555555"
 
 -- layout hook
 myLayout = avoidStruts 
-        -- $ ModifiedLayout clock
         $ smartBorders
         $ windowNavigation
         $ maximize
         $ boringWindows
         $ onWorkspace "im" (enableTabs three_col')
         $ onWorkspace "web" big_layouts
+        $ onWorkspace "gothic" big_layouts
         $ default_layouts
         where
             default_layouts = (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall') ||| magni_tall)
@@ -263,8 +274,8 @@ myManageHook = composeAll
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
 
-myStatusBar = "dzen2 -x '0' -y '0' -h '14' -w '600'  -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
---myStatusBar = "xmobar"
+--myStatusBar = "dzen2 -x '0' -y '0' -h '14' -w '600'  -ta 'l' -fg '" ++ myNormalFGColor ++ "' -bg '" ++ myDzenBGColor ++ "' -fn '" ++ myFont ++ "'"
+myStatusBar = "xmobar -x 1"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=" ++ myUrgentFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId

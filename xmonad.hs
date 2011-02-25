@@ -83,7 +83,7 @@ main= do
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
-                , ("M-;",       withFocused (sendMessage . maximizeRestore))
+                , ("M-f",       withFocused (sendMessage . maximizeRestore))
                 -- cmus control
                 , ("M-z",       spawn "cmus-remote --prev")
                 , ("M-x",       spawn "cmus-remote --play")
@@ -108,8 +108,8 @@ main= do
                 , ("M-S-,",     onGroup W.focusUp') -- Move focus between tabs
                 , ("M-S-.",     onGroup W.focusDown') -- Move focus between tabs
                 -- topic space related keybindings
-                , ("M-f",       promptedGoto) -- TS goto
-                , ("M-S-f",     promptedShift) -- TS shift
+                , ("M-;",       promptedGoto) -- TS goto
+                , ("M-S-;",     promptedShift) -- TS shift
                 , ("M-'",       toggleWS) -- switch to previous topic
                 -- window nav
                 , ("C-M-l",       sendMessage $ Go R)

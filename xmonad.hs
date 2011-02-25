@@ -53,18 +53,13 @@ main= do
                 , workspaces         = myWorkspaces
                 , manageHook         = myManageHook <+> manageDocks -- <+> manageMonitor clock
                 , layoutHook         = myLayout
-                --, logHook            = dynamicLogWithPP $ myDzenPP bar
                 , logHook            = dynamicLogWithPP $ myXmobarPP bar
                 }
-                --`removeKeysP` ["M-" ++ [n] | n <- ['1'..'9']]
-                --`removeKeysP` ["M-S-" ++ [n] | n <- ['1'..'9']]
-                --`removeKeysP` ["M-C-" ++ [n] | n <- ['1'..'9']]
                 `removeKeysP` [ "M-w", "M-e", "M-b" ] 
                 `additionalKeysP`
                 (
                 [ ("M-r",       spawn (myDmenu))
                 , ("M-g",       goToSelected $ gsconfig2 greenColorizer) -- window grid
-                --, ("M-n",     sendMessage MirrorShrink)
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
@@ -94,7 +89,6 @@ main= do
                 , ("M-S-m",     withFocused (sendMessage . UnMerge))
                 , ("M-m M-h",   withFocused (sendMessage . SubMessage (SomeMessage Shrink) ))
                 , ("M-m M-l",   withFocused (sendMessage . SubMessage (SomeMessage Expand) ))
-                --, ("M-m M-space",   withFocused (sendMessage . SubMessage (SomeMessage NextLayout) ))
                 , ("M-S-,",     onGroup W.focusUp') -- Move focus between tabs
                 , ("M-S-.",     onGroup W.focusDown') -- Move focus between tabs
                 -- topic space related keybindings
@@ -142,9 +136,8 @@ myTopics =
    , "doc", "music", "web"
    , "admin"
    , "im"
-   , "vbox"
    -- >9 topics:
-   --, "euler", "newton", "fermat", "rzedzian"
+   , "vbox"
    , "1", "2", "3", "4" -- general purpose topics
    , "xmonad"
    , "mov"
@@ -257,7 +250,6 @@ myLayout = avoidStruts
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
             magni_tall = magnifier resizable_tall'
             mirror_magni_tall = magnifier (Mirror resizable_tall')
-            -- two_pane_tall = subLayout [0,1,2,1] (Tall 1 0.2 0.5 ||| tabbed' ||| Circle) $ resizable_tall'
 
          
 -- tabbed theme
@@ -272,7 +264,6 @@ myTabTheme = defaultTheme
     , inactiveTextColor = "" ++ myDzenFGColor ++ ""
     , urgentTextColor = "" ++ myUrgentFGColor ++ ""
     , fontName = "snap"
-    --, decoWidth = ""
     , decoHeight = 16
     }
 
@@ -310,7 +301,6 @@ myXmobarPP h = defaultPP
         "Maximize Tabbed Simplest" -> "[T]"
         "Maximize Tabbed Spacing 2 ThreeCol" -> "[3]"
         "Maximize Circle" -> "[O]"
-        "OneBig 0.75 0.75" -> "[B]"
         _ -> x
         )
     , ppOutput = hPutStrLn h

@@ -166,6 +166,7 @@ myTopics =
    , "mov"
    , "gimp"
    , "gothic"
+   , "@"
    ]
 
 myTopicConfig :: TopicConfig
@@ -196,6 +197,7 @@ myTopicConfig = TopicConfig
                         spawnShellIn "doc")
         , ("vbox",      spawn "VirtualBox")
         , ("gimp",      spawn "gimp")
+        , ("@",         spawn "jumanji poczta.prymityw.pl")
         ]
     }
 

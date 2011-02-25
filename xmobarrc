@@ -1,0 +1,18 @@
+Config { font = "-*-snap-*-*-*-*-10-*-*-*-*-*-*-u"
+       , bgColor = "#262626"
+       , fgColor = "#00ff00"
+       , position = Top
+       , lowerOnStart = True
+       , commands = [ Run Network "wlan0" ["-L","0","-H","32","--normal","green","--high","red"] 30
+                    , Run MultiCpu ["-t", "Cpu: <total0> <total1>", "-L","3","-H","50","--normal","green","--high","red"] 10
+                    , Run Memory ["-t","Mem: <used>Mb <freebar>", "-f", "|", "-b", " "] 30
+                    , Run Date "%_d.%m.%Y <fc=#00af22>::</fc> <fc=#ff0000>%H:%M</fc>" "date" 50
+                    , Run TopProc [] 50
+                    , Run Battery ["-t", "Batt: <left> <leftbar>", "-L","10","-H","80", "-l", "red", "--normal","yellow","--high","green", "-f", "|", "-b", " "] 50
+                    --, Run Wireless "wlan0" ["-t", "<essid>: <qualitybar>"] 30
+                    , Run StdinReader
+                    ]
+       , sepChar = "%"
+       , alignSep = "}{"
+       , template = "%StdinReader% }{ [TopCpu: %top%] [%multicpu%] [%memory%] [%wlan0%] [%battery%] <fc=#00af22>::</fc> %date%"
+       }

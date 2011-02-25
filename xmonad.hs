@@ -22,6 +22,7 @@ import XMonad.Layout.ThreeColumns
 import XMonad.Layout.OneBig
 import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
+import XMonad.Layout.Circle
 -- sublayouts
 import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll, SubMessage), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
 import XMonad.Layout.WindowNavigation
@@ -92,6 +93,11 @@ main= do
                 , ("M--",       spawn "cmus-remote --vol -10%")
                 , ("M-=",       spawn "cmus-remote --vol +10%")
                 -- eof cmus control
+                , ("M-<F8>",    sendMessage $ JumpToLayout "Circle")
+                , ("M-<F9>",    sendMessage $ JumpToLayout "Tabbed Simplest")
+                , ("M-<F10>",   sendMessage $ JumpToLayout "Tabbed Spacing 2 ResizableTall")
+                , ("M-<F11>",   sendMessage $ JumpToLayout "Magnifier Spacing 2 ResizableTall")
+                , ("M-<F12>",   sendMessage $ JumpToLayout "Magnifier Mirror Spacing 2 ResizableTall")
                 , ("M-S-c",     kill1)  -- remove a window copy or kill window otherwise
                 , ("M-M1-k",    sendMessage MirrorExpand)
                 , ("M-M1-j",    sendMessage MirrorShrink)
@@ -246,7 +252,7 @@ myLayout = avoidStruts
         $ onWorkspace "gothic" big_layouts
         $ default_layouts
         where
-            default_layouts = (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall') ||| magni_tall)
+            default_layouts = (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall') ||| magni_tall ||| mirror_magni_tall ||| Circle)
             big_layouts = (tabbed' ||| Full ||| magni_tall)
             -- complex layout definitions:
             resizable_tall' = spacing 2 $ ResizableTall 1 (3/100) (1/2) []
@@ -254,6 +260,7 @@ myLayout = avoidStruts
             three_col'     = spacing 2 $ ThreeColMid 2 (3/100) (4/5)
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
             magni_tall = magnifier resizable_tall'
+            mirror_magni_tall = magnifier (Mirror resizable_tall')
             -- two_pane_tall = subLayout [0,1,2,1] (Tall 1 0.2 0.5 ||| tabbed' ||| Circle) $ resizable_tall'
 
          

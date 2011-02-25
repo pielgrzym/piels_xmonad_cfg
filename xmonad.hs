@@ -146,14 +146,15 @@ myWorkspaces = myTopics
 
 myTopics :: [Topic]
 myTopics =
-   [ "net" -- the first one
+   [ "start" -- the first one
    , "im"
    , "proj", "debug"
    , "doc", "music", "web"
    , "admin"
    , "vbox"
    -- >9 topics:
-   , "euler", "newton", "fermat", "rzedzian"
+   --, "euler", "newton", "fermat", "rzedzian"
+   , "1", "2", "3", "4" -- general purpose topics
    , "xmonad"
    , "mov"
    , "gimp"
@@ -163,7 +164,7 @@ myTopics =
 myTopicConfig :: TopicConfig
 myTopicConfig = TopicConfig
     { topicDirs = M.fromList $
-        [ ("net", "/etc")
+        [ ("start", "~")
         , ("proj", "proj")
         , ("debug", "proj")
         , ("xmonad", "~/.xmonad")
@@ -172,12 +173,11 @@ myTopicConfig = TopicConfig
         , ("doc", "Dropbox")
         , ("gothic", "~/gothic/g")
         ]
-    , defaultTopicAction = const $ spawnShell >*> 2
+    , defaultTopicAction = const $ spawnShell
     , defaultTopic = "net"
     , maxTopicHistory = 10
     , topicActions = M.fromList $
-        [ ("net",       spawnShell >> 
-                        spawnShellIn "/etc/openvpn")
+        [ ("start",     spawnShell)
         , ("xmonad",    spawnShellIn ".xmonad" >>
                         spawnShellIn ".xmonad")
         , ("web",       spawn "opera")
@@ -186,7 +186,7 @@ myTopicConfig = TopicConfig
         , ("mov",       spawnShell)
         , ("gothic",    spawnShell)
         , ("doc",       spawnShell >>
-                        spawnShellIn "Dropbox")
+                        spawnShellIn "doc")
         , ("vbox",      spawn "VirtualBox")
         , ("gimp",      spawn "gimp")
         ]
@@ -214,7 +214,7 @@ myXPConfig = defaultXPConfig {
         , promptBorderWidth = 0
         , fgHLight = "black"
         , bgHLight = "green"
-        , autoComplete = Just 10
+        , autoComplete = Just 1000
 }
 
 -- Color, font and iconpath definitions:

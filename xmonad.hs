@@ -153,10 +153,11 @@ myWorkspaces = myTopics
 myTopics :: [Topic]
 myTopics =
    [ "start" -- the first one
-   , "im"
+   , "@"
    , "proj", "debug"
    , "doc", "music", "web"
    , "admin"
+   , "im"
    , "vbox"
    -- >9 topics:
    --, "euler", "newton", "fermat", "rzedzian"
@@ -165,7 +166,6 @@ myTopics =
    , "mov"
    , "gimp"
    , "gothic"
-   , "@"
    ]
 
 myTopicConfig :: TopicConfig

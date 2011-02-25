@@ -169,6 +169,7 @@ myTopicConfig = TopicConfig
         , ("admin",     spawnShell >*> 3 >>
                         spawn "jumanji 172.29.0.1:8080")
         , ("mov",       spawnShell)
+        , ("music",     spawn "xterm -e cmus")
         , ("gothic",    spawnShell)
         , ("doc",       spawnShell >>
                         spawnShellIn "doc")

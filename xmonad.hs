@@ -53,7 +53,6 @@ import XMonad.Actions.FloatKeys
 -- * nowe layouty dla ts
 main= do 
         bar <- spawnPipe myStatusBar
-        -- spawn "/home/pielgrzym/.xmonad/dzen.sh"
         spawn "unclutter -idle 3"
         spawn "syndaemon -k -d -i 2 -t"
         --urxvtd <- spawnPipe "urxvtd -q -f"
@@ -237,7 +236,7 @@ myNormalFGColor = "#ffffff"
 myNormalBGColor = "#0f0f0f"
 myFocusedFGColor = "#f0f0f0"
 myFocusedBGColor = "#333333"
-myUrgentFGColor = "#0099ff"
+myUrgentFGColor = "#00ff00"
 myUrgentBGColor = "#0077ff"
 myIconFGColor = "#777777"
 myIconBGColor = "#0f0f0f"
@@ -302,18 +301,21 @@ myXmobarPP h = defaultPP
     , ppVisible = wrap ("[<fc=" ++ myNormalFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
     , ppHidden = wrap "" "" . \wsId -> dropIx wsId -- don't use <fc> here!!
     --, ppHiddenNoWindows = wrap ("<fc=" ++ myDzenFGColor ++ ">") "</fc>" . \wsId -> if (':' `elem` wsId) then drop 2 wsId else wsId
-    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("<fc=" ++ myDzenFGColor ++ ">") "</fc>" . dropIx $ wsId
+    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("<fc=" ++ mySeperatorColor ++ ">") "</fc>" . dropIx $ wsId
     , ppUrgent = wrap ("<fc=" ++ myUrgentFGColor ++ ">!") "!</fc>" . \wsId -> dropIx wsId
     , ppSep = " "
     , ppWsSep = " "
-    , ppTitle = xmobarColor (""++ myNormalFGColor ++ "") "" . wrap "< " " >"
-    , ppLayout = xmobarColor (""++ myDzenFGColor ++ "") "" .
+    , ppTitle = xmobarColor (""++ myIconFGColor ++ "") "" . wrap "[ " " ]"
+    , ppLayout = xmobarColor ("red") "" .
         (\x -> case x of
         "Full" -> "[ ]"
-        "ResizableTall" -> "[|]"
-        "Mirror ResizableTall" -> "[-]"
-        "Tabbed Simplest" -> "[T]"
-        "ThreeCol" -> "[3]"
+        "Maximize Tabbed Spacing 2 ResizableTall" -> "[|]"
+        "Maximize Magnifier Spacing 2 ResizableTall" -> "[:]"
+        "Maximize Tabbed Mirror Spacing 2 ResizableTall" -> "[-]"
+        "Maximize Magnifier Mirror Spacing 2 ResizableTall" -> "[=]"
+        "Maximize Tabbed Simplest" -> "[T]"
+        "Maximize Tabbed Spacing 2 ThreeCol" -> "[3]"
+        "Maximize Circle" -> "[O]"
         "OneBig 0.75 0.75" -> "[B]"
         _ -> x
         )
@@ -321,7 +323,7 @@ myXmobarPP h = defaultPP
     }
     where
     dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
-    staticWs = ["1:im", "2:local", "7:web", "8:dev", "9:remote"]
+    staticWs = ["start", "web", "proj", "@", "admin"]
 
 myDzenPP h = defaultPP
     { ppCurrent = wrap ("^fg(" ++ myUrgentFGColor ++ ")^bg(" ++ myFocusedBGColor ++ ")^p()^i(" ++ myIconDir ++ "/full.xbm) ^fg(" ++ myNormalFGColor ++ ")") "^fg()^bg()^p()" . \wsId -> dropIx wsId

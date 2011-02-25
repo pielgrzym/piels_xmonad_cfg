@@ -1,4 +1,5 @@
-import XMonad
+import XMonad hiding ( (|||) )
+import XMonad.Layout.LayoutCombinators
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Util.Run(spawnPipe)

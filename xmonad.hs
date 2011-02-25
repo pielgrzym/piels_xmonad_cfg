@@ -296,6 +296,7 @@ myManageHook = composeAll
     , className =? "feh"            --> doFloat
     , className =? "Gimp"           --> doFloat
     , className =? "Conky"          --> doIgnore
+    , className =? "Skype"          --> doShift "im"
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
 

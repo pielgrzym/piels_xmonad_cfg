@@ -15,8 +15,7 @@ DZENBG='#262626'
 # Dzen's forground colour
 DZENFG='#999999'
 # Dzen's X position
-DZENX=0
-#DZENX=600
+DZENX=600
 # Dzen's Y posit
 DZENY=0
 # Dzen's width
@@ -26,11 +25,11 @@ DZENALIGN=r
 # Gauge background colour
 GAUGEBG='#323232'
 # Gauge foreground colour
-GAUGEFG=$MAIN_COLOR
+GAUGEFG='#0069e0'
 # Path to your Dzen icons
 ICONPATH=/home/pielgrzym/.xmonad/icons
 # Network interface
-INTERFACE=eth0
+INTERFACE=wlan0
 # Sound device for volume control
 SNDDEVICE=Master
 # Date formating
@@ -181,15 +180,15 @@ while :; do
 
         PCPU=$(fcpu)
 
-        #if [ $WIFICOUNTER -ge $WIFIIVAL ]; then
-                #WIFI=$(fwifi)
-                #WIFICOUNTER=0
-        #fi
+        if [ $WIFICOUNTER -ge $WIFIIVAL ]; then
+                WIFI=$(fwifi)
+                WIFICOUNTER=0
+        fi
 
-        #if [ $BATTCOUNTER -ge $BATIVAL ]; then
-                #BATTERY=$(fbattery)
-                #BATTCOUNTER=0
-        #fi
+        if [ $BATTCOUNTER -ge $BATIVAL ]; then
+                BATTERY=$(fbattery)
+                BATTCOUNTER=0
+        fi
 
         if [ $DATECOUNTER -ge $DATEIVAL ]; then
                 PDATE=$(fdate)
@@ -220,10 +219,10 @@ while :; do
         DATECOUNTER=$((DATECOUNTER+1))
         CPUTEMPCOUNTER=$((CPUTEMPCOUNTER+1))
         VOLUMECOUNTER=$((VOLUMECOUNTER+1))
-        #BATTCOUNTER=$((BATTCOUNTER+1))
-        #WIFICOUNTER=$((WIFICOUNTER+1))
+        BATTCOUNTER=$((BATTCOUNTER+1))
+        WIFICOUNTER=$((WIFICOUNTER+1))
 
         sleep $SLEEP
 
         # Pass it to dzen
-done | dzen2 -xs 2 -bg $DZENBG -fg $DZENFG -x $DZENX -y $DZENY -ta $DZENALIGN -h 14 -p -fn $DZENFNT -dock
+done | dzen2 -xs 0 -bg $DZENBG -fg $DZENFG -x $DZENX -y $DZENY -ta $DZENALIGN -h 14 -p -e "button2=exec:$TOGGLE;button4=exec:$CI;button5=exec:$CD" -fn $DZENFNT

@@ -160,35 +160,39 @@ myTopics =
    , "xmonad"
    , "mov"
    , "gimp"
-   , "gothic"
+   , "games"
    ]
 
 myTopicConfig :: TopicConfig
 myTopicConfig = TopicConfig
     { topicDirs = M.fromList $
         [ ("start", "~")
-        , ("proj", "proj")
-        , ("debug", "proj")
+        , ("@", "~")
+        , ("proj", "~/proj")
+        , ("debug", "~/proj")
         , ("xmonad", "~/.xmonad")
-        , ("mov", "mov")
-        , ("music", "muza")
-        , ("doc", "Dropbox")
-        , ("gothic", "~/gothic/g")
+        , ("admin", "~/proj")
+        , ("im", "~")
+        , ("mov", "~/mov")
+        , ("music", "~/muza")
+        , ("doc", "~/Dropbox")
+        , ("games", "~")
         ]
     , defaultTopicAction = const (return ())
     --, defaultTopicAction = const $ spawnShell
-    , defaultTopic = "net"
+    , defaultTopic = "start"
     , maxTopicHistory = 10
     , topicActions = M.fromList $
         [ ("start",     spawnShell)
-        , ("xmonad",    spawnShellIn ".xmonad" >>
-                        spawnShellIn ".xmonad")
         , ("web",       spawn "opera")
+        , ("im",        spawnShell >>
+                        spawn "pidgin")
+        , ("music",     spawn "urxvt -e cmus")
+        , ("xmonad",    spawnShell >*> 2)
         , ("admin",     spawnShell >*> 3 >>
                         spawn "jumanji 172.29.0.1:8080")
         , ("mov",       spawnShell)
-        , ("music",     spawn "urxvt -e cmus")
-        , ("gothic",    spawnShell)
+        , ("games",     spawnShell)
         , ("doc",       spawnShell >>
                         spawnShellIn "doc")
         , ("vbox",      spawn "VirtualBox")

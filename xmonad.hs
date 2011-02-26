@@ -38,7 +38,7 @@ import XMonad.Actions.FloatKeys
 main= do 
         bar <- spawnPipe myStatusBar
         --spawn "unclutter -idle 3"
-        --spawn "nitrogen --restore"
+        spawn "nitrogen --restore"
         --urxvtd <- spawnPipe "urxvtd -q -f"
         checkTopicConfig myTopics myTopicConfig
         xmonad $ withUrgencyHook NoUrgencyHook

@@ -68,7 +68,7 @@ main= do
                 `additionalKeysP`
                 (
                 [ ("M-r",       spawn (myDmenu))
-                , ("M-g",       goToSelected defaultGSConfig)
+                , ("M-g",       goToSelected $ gsconfig2 greenColorizer )
                 --, ("M-n",     sendMessage MirrorShrink)
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
@@ -121,6 +121,19 @@ main= do
                         | (tag, key) <- zip  [ myWorkspaces !! x | x <- [9..17]] ['1'..'9']
                         , (action, m) <- [(windows . W.greedyView, ""), (windows . W.shift, "S-"), (windows . copy, "C-")]]
                 )
+
+gsconfig2 colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 30, gs_cellwidth = 100 }
+greenColorizer = colorRangeFromClassName
+                      black            -- lowest inactive bg
+                      green            -- highest inactive bg
+                      yellow           -- active bg
+                      white            -- inactive fg
+                      black            -- active fg
+   where black = minBound
+         white = maxBound
+         yellow = (0xFF,0xFF,0x70)
+         green = (0x70,0xFF,0x70)
+
 
 myWorkspaces = ["1:im", "2:local", "3:io", "4:books1", "5:books2", "6:music", "7:web", "8:gauss", "9:remote",
                 "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9"]

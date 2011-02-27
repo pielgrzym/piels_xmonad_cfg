@@ -79,11 +79,6 @@ main= do
                 , ("M-<F11>",   sendMessage $ JumpToLayout "Magnifier Spacing 2 ResizableTall")
                 , ("M-<F12>",   sendMessage $ JumpToLayout "Magnifier Mirror Spacing 2 ResizableTall")
                 , ("M-S-c",     kill1)  -- remove a window copy or kill window otherwise
-                , ("M-<F8>",      sendMessage $ JumpToLayout "Circle")
-                , ("M-<F9>",      sendMessage $ JumpToLayout "Tabbed Simplest")
-                , ("M-<F10>",      sendMessage $ JumpToLayout "Tabbed Spacing 2 ResizableTall")
-                , ("M-<F11>",      sendMessage $ JumpToLayout "Magnifier Spacing 2 ResizableTall")
-                , ("M-<F12>",      sendMessage $ JumpToLayout "Magnifier Mirror Spacing 2 ResizableTall")
                 , ("M-M1-k",    sendMessage MirrorExpand)
                 , ("M-M1-j",    sendMessage MirrorShrink)
                 , ("M-m M-h",   sendMessage $ pullGroup L) -- Merge to Tabbed
@@ -187,7 +182,7 @@ myTopicConfig = TopicConfig
         , ("web",       spawn "opera")
         , ("im",        spawnShell >>
                         spawn "pidgin")
-        , ("music",     spawn "urxvt -e cmus")
+        , ("music",     spawn "clementine")
         , ("xmonad",    spawnShell >*> 2)
         , ("admin",     spawnShell >*> 3 >>
                         spawn "jumanji 172.29.0.1:8080")
@@ -287,6 +282,7 @@ myManageHook = composeAll
     , className =? "feh"            --> doFloat
     , className =? "Gimp"           --> doFloat
     , className =? "Conky"          --> doIgnore
+    , className =? "Clementine"     --> doShift "muza"
     , className =? "Skype"          --> doShift "im"
     , className =? "Pidgin"         --> doShift "im"
     , resource  =? "desktop_window" --> doIgnore

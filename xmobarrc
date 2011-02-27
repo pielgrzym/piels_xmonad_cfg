@@ -7,10 +7,9 @@ Config { font = "-*-snap-*-*-*-*-10-*-*-*-*-*-*-u"
                     , Run MultiCpu ["-t", "Cpu: <total0> <total1>", "-L","3","-H","50","--normal","green","--high","red"] 10
                     , Run Memory ["-t","Mem: <used>Mb <freebar>", "-f", "|", "-b", " "] 30
                     , Run Date "%_d.%m.%Y <fc=#00af22>::</fc> <fc=#ff0000>%H:%M</fc>" "date" 50
-                    , Run TopProc [] 50
                     , Run StdinReader
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% }{ [TopCpu: %top%] [%multicpu%] [%memory%] [%eth0%] <fc=#00af22>::</fc> %date%"
+       , template = "%StdinReader% }{ [%multicpu%] [%memory%] [%eth0%] <fc=#00af22>::</fc> %date%"
        }

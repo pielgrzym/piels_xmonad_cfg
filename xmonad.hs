@@ -37,6 +37,7 @@ import XMonad.Prompt.Workspace
 import XMonad.Actions.FloatKeys
 main= do 
         bar <- spawnPipe myStatusBar
+        spawn "xmobar ~/.xmonad/xmobarrc2 -x 1"
         --spawn "unclutter -idle 3"
         spawn "nitrogen --restore"
         --urxvtd <- spawnPipe "urxvtd -q -f"
@@ -153,7 +154,7 @@ myTopics =
    , "vbox"
    , "1", "2", "3", "4" -- general purpose topics
    , "xmonad"
-   , "mov"
+   , "films"
    , "gimp"
    , "games"
    ]
@@ -168,7 +169,7 @@ myTopicConfig = TopicConfig
         , ("xmonad", "~/.xmonad")
         , ("admin", "~/proj")
         , ("im", "~")
-        , ("mov", "~/mov")
+        , ("films", "~/mov")
         , ("music", "~/muza")
         , ("doc", "~/Dropbox")
         , ("games", "~")
@@ -183,10 +184,13 @@ myTopicConfig = TopicConfig
         , ("im",        spawnShell >>
                         spawn "pidgin")
         , ("music",     spawn "clementine")
+        , ("proj",      spawnShell >*> 2)
+        , ("debug",     spawnShell >>
+                        spawn "jumanji")
         , ("xmonad",    spawnShell >*> 2)
         , ("admin",     spawnShell >*> 3 >>
                         spawn "jumanji 172.29.0.1:8080")
-        , ("mov",       spawnShell)
+        , ("films",    spawnShell)
         , ("games",     spawnShell)
         , ("doc",       spawnShell >>
                         spawnShellIn "doc")

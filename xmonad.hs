@@ -24,6 +24,7 @@ import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
 import XMonad.Layout.Circle
 import XMonad.Layout.Named
+import XMonad.Layout.Reflect
 -- sublayouts
 import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll, SubMessage), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
 import XMonad.Layout.WindowNavigation
@@ -241,9 +242,10 @@ myLayout = avoidStruts
         $ smartBorders
         $ configurableNavigation noNavigateBorders
         $ boringWindows
-        $ onWorkspace "im" (enableTabs three_col' ||| im_layout)
+        $ onWorkspace "im" (enableTabs three_col' ||| im_layout')
         $ onWorkspace "web" big_layouts
         $ onWorkspace "games" big_layouts
+        $ onWorkspace "gimp" (gimpL)
         $ default_layouts
         where
             default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| magni_tall ||| mirror_magni_tall ||| circle')
@@ -257,8 +259,8 @@ myLayout = avoidStruts
             magni_tall = named "[:]" $ magnifier resizable_tall'
             mirror_magni_tall = named "[=]" $ magnifier (Mirror resizable_tall')
             circle' = named "[O]" $ Circle
-            im_layout = withIM (1%5) (Role "buddy_list") imTabbed
-            imTabbed  = tabbedAlways shrinkText myTabTheme
+            im_layout' = reflectHoriz $ withIM (1%5) (Role "buddy_list") tabbed'
+            gimpL = withIM (0.11) (Role "gimp-toolbox") $ reflectHoriz $ withIM (0.15) (Role "gimp-dock") Full
          
 -- tabbed theme
 myTabTheme = defaultTheme
@@ -281,7 +283,7 @@ myManageHook = composeAll
     , className =? "MPlayer"        --> doFloat
     , className =? "Smplayer"       --> doFloat
     , className =? "feh"            --> doFloat
-    , className =? "Gimp"           --> doFloat
+    --, className =? "Gimp"           --> doFloat
     , className =? "Conky"          --> doIgnore
     , className =? "Clementine"     --> doShift "muza"
     , className =? "Skype"          --> doShift "im"

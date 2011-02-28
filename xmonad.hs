@@ -65,12 +65,12 @@ main= do
                 , ("M-u",       focusUrgent)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
                 -- cmus control
-                , ("M-z",       spawn "cmus-remote --prev")
-                , ("M-x",       spawn "cmus-remote --play")
-                , ("M-c",       spawn "cmus-remote --pause")
-                , ("M-v",       spawn "cmus-remote --stop")
-                , ("M--",       spawn "cmus-remote --vol -10%")
-                , ("M-=",       spawn "cmus-remote --vol +10%")
+                --, ("M-z",       spawn "cmus-remote --prev")
+                --, ("M-x",       spawn "cmus-remote --play")
+                --, ("M-c",       spawn "cmus-remote --pause")
+                --, ("M-v",       spawn "cmus-remote --stop")
+                --, ("M--",       spawn "cmus-remote --vol -10%")
+                --, ("M-=",       spawn "cmus-remote --vol +10%")
                 -- eof cmus control
                 , ("M-<F8>",    sendMessage $ JumpToLayout "Circle")
                 , ("M-<F9>",    sendMessage $ JumpToLayout "Tabbed Simplest")
@@ -96,23 +96,23 @@ main= do
                 , ("M-S-;",     promptedShift) -- TS shift
                 , ("M-'",       toggleWS) -- switch to previous topic
                 -- window nav
-                , ("C-M-l",       sendMessage $ Go R)
-                , ("C-M-h",       sendMessage $ Go L)
-                , ("C-M-j",       sendMessage $ Go D)
-                , ("C-M-k",       sendMessage $ Go U)
+                , ("C-M-l",     sendMessage $ Go R)
+                , ("C-M-h",     sendMessage $ Go L)
+                , ("C-M-j",     sendMessage $ Go D)
+                , ("C-M-k",     sendMessage $ Go U)
                 -- float
-                , ("M-<L>", withFocused (keysMoveWindow (-20,0))) -- move float left
-                , ("M-<R>", withFocused (keysMoveWindow (20,0))) -- move float right
-                , ("M-<U>", withFocused (keysMoveWindow (0,-20))) -- move float up
-                , ("M-<D>", withFocused (keysMoveWindow (0,20))) -- move float down
-                , ("M-S-<L>", withFocused (keysResizeWindow (-20,0) (0,0))) --shrink float at right
-                , ("M-S-<R>", withFocused (keysResizeWindow (20,0) (0,0))) --expand float at right
-                , ("M-S-<D>", withFocused (keysResizeWindow (0,20) (0,0))) --expand float at bottom
-                , ("M-S-<U>", withFocused (keysResizeWindow (0,-20) (0,0))) --shrink float at bottom
-                , ("M-C-<L>", withFocused (keysResizeWindow (20,0) (1,0))) --expand float at left
-                , ("M-C-<R>", withFocused (keysResizeWindow (-20,0) (1,0))) --shrink float at left
-                , ("M-C-<U>", withFocused (keysResizeWindow (0,20) (0,1))) --expand float at top
-                , ("M-C-<D>", withFocused (keysResizeWindow (0,-20) (0,1))) --shrink float at top
+                , ("M-<L>",     withFocused (keysMoveWindow (-20,0))) -- move float left
+                , ("M-<R>",     withFocused (keysMoveWindow (20,0))) -- move float right
+                , ("M-<U>",     withFocused (keysMoveWindow (0,-20))) -- move float up
+                , ("M-<D>",     withFocused (keysMoveWindow (0,20))) -- move float down
+                , ("M-S-<L>",   withFocused (keysResizeWindow (-20,0) (0,0))) --shrink float at right
+                , ("M-S-<R>",   withFocused (keysResizeWindow (20,0) (0,0))) --expand float at right
+                , ("M-S-<D>",   withFocused (keysResizeWindow (0,20) (0,0))) --expand float at bottom
+                , ("M-S-<U>",   withFocused (keysResizeWindow (0,-20) (0,0))) --shrink float at bottom
+                , ("M-C-<L>",   withFocused (keysResizeWindow (20,0) (1,0))) --expand float at left
+                , ("M-C-<R>",   withFocused (keysResizeWindow (-20,0) (1,0))) --shrink float at left
+                , ("M-C-<U>",   withFocused (keysResizeWindow (0,20) (0,1))) --expand float at top
+                , ("M-C-<D>",   withFocused (keysResizeWindow (0,-20) (0,1))) --shrink float at top
                 ]
                 ++
                 -- below: screen swithing with 'i' and 'o'
@@ -284,8 +284,8 @@ myManageHook = composeAll
 myStatusBar = "xmobar -x 1"
  
 myXmobarPP h = defaultPP
-    { ppCurrent = wrap ("[<fc=" ++ myUrgentFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
-    , ppVisible = wrap ("[<fc=" ++ myNormalFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
+    { ppCurrent = wrap ("[<fc=#ff0000>") "</fc>]" . \wsId -> dropIx wsId
+    , ppVisible = wrap ("[<fc=" ++ myUrgentFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
     , ppHidden = wrap "" "" . \wsId -> dropIx wsId -- don't use <fc> here!!
     , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("<fc=" ++ mySeperatorColor ++ ">") "</fc>" . dropIx $ wsId
     , ppUrgent = wrap ("<fc=" ++ myUrgentFGColor ++ ">!") "!</fc>" . \wsId -> dropIx wsId

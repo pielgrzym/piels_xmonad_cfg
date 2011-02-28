@@ -68,14 +68,6 @@ main= do
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
-                -- cmus control
-                , ("M-z",       spawn "cmus-remote --prev")
-                , ("M-x",       spawn "cmus-remote --play")
-                , ("M-c",       spawn "cmus-remote --pause")
-                , ("M-e",       spawn "cmus-remote --pause")
-                , ("M-v",       spawn "cmus-remote --stop")
-                , ("M--",       spawn "cmus-remote --vol -10%")
-                , ("M-=",       spawn "cmus-remote --vol +10%")
                 -- eof cmus control
                 , ("M-<F8>",    sendMessage $ JumpToLayout "[O]")
                 , ("M-<F9>",    sendMessage $ JumpToLayout "[T]")
@@ -89,13 +81,10 @@ main= do
                 , ("M-m M-l",   sendMessage $ pullGroup R)
                 , ("M-m M-k",   sendMessage $ pullGroup U)
                 , ("M-m M-j",   sendMessage $ pullGroup D)
-                , ("M-m m",     withFocused (sendMessage . MergeAll))
                 , ("M-m S-m",   withFocused (sendMessage . UnMergeAll))
                 , ("M-S-m",     withFocused (sendMessage . UnMerge))
-                , ("M-m M-h",   withFocused (sendMessage . SubMessage (SomeMessage Shrink) ))
-                , ("M-m M-l",   withFocused (sendMessage . SubMessage (SomeMessage Expand) ))
-                , ("M-S-,",     onGroup W.focusUp') -- Move focus between tabs
-                , ("M-S-.",     onGroup W.focusDown') -- Move focus between tabs
+                , ("M-[",     onGroup W.focusUp') -- Move focus between tabs
+                , ("M-]",     onGroup W.focusDown') -- Move focus between tabs
                 -- topic space related keybindings
                 , ("M-;",       promptedGoto) -- TS goto
                 , ("M-S-;",     promptedShift) -- TS shift

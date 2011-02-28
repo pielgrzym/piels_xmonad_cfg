@@ -140,9 +140,9 @@ myTopics =
    , "vbox"
    , "1", "2", "3", "4" -- general purpose topics
    , "xmonad"
-   , "mov"
+   , "films"
    , "gimp"
-   , "gothic"
+   , "games"
    ]
 
 myTopicConfig :: TopicConfig
@@ -152,10 +152,10 @@ myTopicConfig = TopicConfig
         , ("proj", "proj")
         , ("debug", "proj")
         , ("xmonad", "~/.xmonad")
-        , ("mov", "mov")
+        , ("films", "mov")
         , ("music", "muza")
         , ("doc", "Dropbox")
-        , ("gothic", "~/gothic/g")
+        , ("games", "~")
         ]
     , defaultTopicAction = const (return ())
     --, defaultTopicAction = const $ spawnShell
@@ -168,9 +168,9 @@ myTopicConfig = TopicConfig
         , ("web",       spawn "opera")
         , ("admin",     spawnShell >*> 3 >>
                         spawn "jumanji 172.29.0.1:8080")
-        , ("mov",       spawnShell)
-        , ("music",     spawn "xterm -e cmus")
-        , ("gothic",    spawnShell)
+        , ("films",     spawnShell)
+        , ("music",     spawn "clementine")
+        , ("games",     spawnShell)
         , ("doc",       spawnShell >>
                         spawnShellIn "doc")
         , ("vbox",      spawn "VirtualBox")
@@ -239,7 +239,7 @@ myLayout = avoidStruts
         $ boringWindows
         $ onWorkspace "im" (enableTabs three_col')
         $ onWorkspace "web" big_layouts
-        $ onWorkspace "gothic" big_layouts
+        $ onWorkspace "games" big_layouts
         $ default_layouts
         where
             default_layouts = (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall') ||| magni_tall ||| mirror_magni_tall ||| Circle)

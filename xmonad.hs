@@ -241,7 +241,7 @@ myLayout = avoidStruts
         $ boringWindows
         $ onWorkspace "im" (enableTabs three_col')
         $ onWorkspace "web" big_layouts
-        $ onWorkspace "gothic" big_layouts
+        $ onWorkspace "games" big_layouts
         $ default_layouts
         where
             default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| magni_tall ||| mirror_magni_tall ||| circle')
@@ -259,14 +259,14 @@ myLayout = avoidStruts
 -- tabbed theme
 myTabTheme = defaultTheme
     { activeColor = "" ++ myDzenFGColor ++ ""
-    , inactiveColor = "" ++ myDzenBGColor ++ ""
-    , urgentColor = "" ++ myUrgentBGColor ++ ""
-    , activeBorderColor = "" ++ myDzenFGColor ++ ""
-    , inactiveBorderColor ="" ++ myDzenBGColor ++ ""
-    , urgentBorderColor = "" ++ myDzenFGColor ++ ""
     , activeTextColor = "#000000"
+    , activeBorderColor = "" ++ myDzenFGColor ++ ""
+    , inactiveColor = "" ++ myDzenBGColor ++ ""
     , inactiveTextColor = "" ++ myDzenFGColor ++ ""
+    , inactiveBorderColor ="" ++ myDzenBGColor ++ ""
+    , urgentColor = "" ++ myUrgentBGColor ++ ""
     , urgentTextColor = "" ++ myUrgentFGColor ++ ""
+    , urgentBorderColor = "" ++ myDzenFGColor ++ ""
     , fontName = "snap"
     , decoHeight = 16
     }

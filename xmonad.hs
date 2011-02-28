@@ -18,6 +18,8 @@ import XMonad.Layout.PerWorkspace
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns
+import XMonad.Layout.IM
+import Data.Ratio ((%))
 import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
 import XMonad.Layout.Circle
@@ -239,7 +241,7 @@ myLayout = avoidStruts
         $ smartBorders
         $ configurableNavigation noNavigateBorders
         $ boringWindows
-        $ onWorkspace "im" (enableTabs three_col')
+        $ onWorkspace "im" (enableTabs three_col' ||| im_layout)
         $ onWorkspace "web" big_layouts
         $ onWorkspace "games" big_layouts
         $ default_layouts
@@ -255,6 +257,8 @@ myLayout = avoidStruts
             magni_tall = named "[:]" $ magnifier resizable_tall'
             mirror_magni_tall = named "[=]" $ magnifier (Mirror resizable_tall')
             circle' = named "[O]" $ Circle
+            im_layout = withIM (1%5) (Role "buddy_list") imTabbed
+            imTabbed  = tabbedAlways shrinkText myTabTheme
          
 -- tabbed theme
 myTabTheme = defaultTheme

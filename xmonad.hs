@@ -21,6 +21,7 @@ import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
 import XMonad.Layout.Circle
+import XMonad.Layout.Named
 -- sublayouts
 import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll, SubMessage), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
 import XMonad.Layout.WindowNavigation
@@ -61,6 +62,8 @@ main= do
                 (
                 [ ("M-r",       spawn (myDmenu))
                 , ("M-g",       goToSelected $ gsconfig2 greenColorizer) -- window grid
+                , ("M-j",       focusDown)
+                , ("M-k",       focusUp)
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
@@ -74,11 +77,11 @@ main= do
                 , ("M--",       spawn "cmus-remote --vol -10%")
                 , ("M-=",       spawn "cmus-remote --vol +10%")
                 -- eof cmus control
-                , ("M-<F8>",    sendMessage $ JumpToLayout "Circle")
-                , ("M-<F9>",    sendMessage $ JumpToLayout "Tabbed Simplest")
-                , ("M-<F10>",   sendMessage $ JumpToLayout "Tabbed Spacing 2 ResizableTall")
-                , ("M-<F11>",   sendMessage $ JumpToLayout "Magnifier Spacing 2 ResizableTall")
-                , ("M-<F12>",   sendMessage $ JumpToLayout "Magnifier Mirror Spacing 2 ResizableTall")
+                , ("M-<F8>",    sendMessage $ JumpToLayout "[O]")
+                , ("M-<F9>",    sendMessage $ JumpToLayout "[T]")
+                , ("M-<F10>",   sendMessage $ JumpToLayout "[|]")
+                , ("M-<F11>",   sendMessage $ JumpToLayout "[:]")
+                , ("M-<F12>",   sendMessage $ JumpToLayout "[=]")
                 , ("M-S-c",     kill1)  -- remove a window copy or kill window otherwise
                 , ("M-M1-k",    sendMessage MirrorExpand)
                 , ("M-M1-j",    sendMessage MirrorShrink)
@@ -145,7 +148,7 @@ greenColorizer = colorRangeFromClassName
 myTopics :: [Topic]
 myTopics =
    [ "start" -- the first one
-   , "@"
+   , "email"
    , "proj", "debug"
    , "doc", "music", "web"
    , "admin"
@@ -163,7 +166,7 @@ myTopicConfig :: TopicConfig
 myTopicConfig = TopicConfig
     { topicDirs = M.fromList $
         [ ("start", "~")
-        , ("@", "~")
+        , ("email", "~")
         , ("proj", "~/proj")
         , ("debug", "~/proj")
         , ("xmonad", "~/.xmonad")
@@ -190,13 +193,13 @@ myTopicConfig = TopicConfig
         , ("xmonad",    spawnShell >*> 2)
         , ("admin",     spawnShell >*> 3 >>
                         spawn "jumanji 172.29.0.1:8080")
-        , ("films",    spawnShell)
+        , ("films",     spawnShell)
         , ("games",     spawnShell)
         , ("doc",       spawnShell >>
                         spawnShellIn "doc")
         , ("vbox",      spawn "VirtualBox")
         , ("gimp",      spawn "gimp")
-        , ("@",         spawn "jumanji poczta.prymityw.pl")
+        , ("email",     spawn "jumanji poczta.prymityw.pl")
         ]
     }
 
@@ -246,22 +249,23 @@ mySeperatorColor = "#555555"
 myLayout = avoidStruts 
         $ smartBorders
         $ configurableNavigation noNavigateBorders
-        $ maximize
         $ boringWindows
         $ onWorkspace "im" (enableTabs three_col')
         $ onWorkspace "web" big_layouts
         $ onWorkspace "gothic" big_layouts
         $ default_layouts
         where
-            default_layouts = (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall') ||| magni_tall ||| mirror_magni_tall ||| Circle)
+            default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| magni_tall ||| mirror_magni_tall ||| circle')
             big_layouts = (tabbed' ||| Full ||| magni_tall)
             -- complex layout definitions:
-            resizable_tall' = spacing 2 $ ResizableTall 1 (3/100) (1/2) []
-            tabbed'        = withBorder 1 $ tabbed shrinkText myTabTheme
-            three_col'     = spacing 2 $ ThreeColMid 2 (3/100) (4/5)
+            resizable_tall' = named "[|]" $ maximize $ enableTabs $ spacing 2 $ ResizableTall 1 (3/100) (1/2) []
+            mirror_resizable_tall' = named "[-]" $ maximize $ enableTabs $ spacing 2 $ Mirror $ ResizableTall 1 (3/100) (1/2) []
+            tabbed'        = named "[T]" $ withBorder 1 $ maximize $ tabbed shrinkText myTabTheme
+            three_col'     = named "[3]" $ spacing 2 $ maximize $ ThreeColMid 2 (3/100) (4/5)
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
-            magni_tall = magnifier resizable_tall'
-            mirror_magni_tall = magnifier (Mirror resizable_tall')
+            magni_tall = named "[:]" $ magnifier resizable_tall'
+            mirror_magni_tall = named "[=]" $ magnifier (Mirror resizable_tall')
+            circle' = named "[O]" $ Circle
          
 -- tabbed theme
 myTabTheme = defaultTheme
@@ -295,7 +299,7 @@ myManageHook = composeAll
 myStatusBar = "xmobar -x 0"
  
 myXmobarPP h = defaultPP
-    { ppCurrent = wrap ("[<fc=" ++ myUrgentFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
+    { ppCurrent = wrap ("[<fc=#ff0000>") "</fc>]" . \wsId -> dropIx wsId
     , ppVisible = wrap ("[<fc=" ++ myNormalFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
     , ppHidden = wrap "" "" . \wsId -> dropIx wsId -- don't use <fc> here!!
     , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("<fc=" ++ mySeperatorColor ++ ">") "</fc>" . dropIx $ wsId
@@ -303,20 +307,9 @@ myXmobarPP h = defaultPP
     , ppSep = " "
     , ppWsSep = " "
     , ppTitle = xmobarColor (""++ myIconFGColor ++ "") "" . wrap "[ " " ]"
-    , ppLayout = xmobarColor ("red") "" .
-        (\x -> case x of
-        "Full" -> "[ ]"
-        "Maximize Tabbed Spacing 2 ResizableTall" -> "[|]"
-        "Maximize Magnifier Spacing 2 ResizableTall" -> "[:]"
-        "Maximize Tabbed Mirror Spacing 2 ResizableTall" -> "[-]"
-        "Maximize Magnifier Mirror Spacing 2 ResizableTall" -> "[=]"
-        "Maximize Tabbed Simplest" -> "[T]"
-        "Maximize Tabbed Spacing 2 ThreeCol" -> "[3]"
-        "Maximize Circle" -> "[O]"
-        _ -> x
-        )
+    , ppLayout = xmobarColor ("red") "" 
     , ppOutput = hPutStrLn h
     }
     where
     dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
-    staticWs = ["start", "web", "proj", "@", "admin"]
+    staticWs = ["start", "web", "proj", "email", "admin"]

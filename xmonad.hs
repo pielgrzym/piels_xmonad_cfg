@@ -18,9 +18,13 @@ import XMonad.Layout.PerWorkspace
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns
+import XMonad.Layout.IM
+import Data.Ratio ((%))
 import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
 import XMonad.Layout.Circle
+import XMonad.Layout.Named
+import XMonad.Layout.Reflect
 -- sublayouts
 import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll, SubMessage), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
 import XMonad.Layout.WindowNavigation
@@ -37,21 +41,22 @@ import XMonad.Prompt.Workspace
 import XMonad.Actions.FloatKeys
 main= do 
         bar <- spawnPipe myStatusBar
-        spawn "unclutter -idle 3"
-        spawn "syndaemon -k -d -i 2 -t"
+        spawn "xmobar ~/.xmonad/xmobarrc2 -x 1"
+        --spawn "unclutter -idle 3"
+        spawn "nitrogen --restore"
         --urxvtd <- spawnPipe "urxvtd -q -f"
         checkTopicConfig myTopics myTopicConfig
         xmonad $ withUrgencyHook NoUrgencyHook
                $ defaultConfig 
                 { 
                 borderWidth          = 3
-                , terminal           = "xterm"
-                --, terminal           = "urxvtc"
-                , normalBorderColor  = "#262626"
-                , focusedBorderColor = "green" 
+                , terminal           = "urxvt"
+                , normalBorderColor  = "#004400"
+                , focusedBorderColor = myMainColor
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
-                , manageHook         = myManageHook <+> manageDocks -- <+> manageMonitor clock
+                , manageHook         = myManageHook <+> manageDocks 
+                -- , manageHook         = myManageHook <+> manageDocks <+> manageMonitor clock
                 , layoutHook         = myLayout
                 , logHook            = dynamicLogWithPP $ myXmobarPP bar
                 }
@@ -60,23 +65,18 @@ main= do
                 (
                 [ ("M-r",       spawn (myDmenu))
                 , ("M-g",       goToSelected $ gsconfig2 greenColorizer) -- window grid
+                , ("M-j",       focusDown)
+                , ("M-k",       focusUp)
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
-                -- cmus control
-                --, ("M-z",       spawn "cmus-remote --prev")
-                --, ("M-x",       spawn "cmus-remote --play")
-                --, ("M-c",       spawn "cmus-remote --pause")
-                --, ("M-v",       spawn "cmus-remote --stop")
-                --, ("M--",       spawn "cmus-remote --vol -10%")
-                --, ("M-=",       spawn "cmus-remote --vol +10%")
                 -- eof cmus control
-                , ("M-<F8>",    sendMessage $ JumpToLayout "Circle")
-                , ("M-<F9>",    sendMessage $ JumpToLayout "Tabbed Simplest")
-                , ("M-<F10>",   sendMessage $ JumpToLayout "Tabbed Spacing 2 ResizableTall")
-                , ("M-<F11>",   sendMessage $ JumpToLayout "Magnifier Spacing 2 ResizableTall")
-                , ("M-<F12>",   sendMessage $ JumpToLayout "Magnifier Mirror Spacing 2 ResizableTall")
+                , ("M-<F8>",    sendMessage $ JumpToLayout "[T]")
+                , ("M-<F9>",    sendMessage $ JumpToLayout "[|]")
+                , ("M-<F10>",   sendMessage $ JumpToLayout "[-]")
+                , ("M-<F11>",   sendMessage $ JumpToLayout "[:]")
+                , ("M-<F12>",   sendMessage $ JumpToLayout "[=]")
                 , ("M-S-c",     kill1)  -- remove a window copy or kill window otherwise
                 , ("M-M1-k",    sendMessage MirrorExpand)
                 , ("M-M1-j",    sendMessage MirrorShrink)
@@ -84,13 +84,10 @@ main= do
                 , ("M-m M-l",   sendMessage $ pullGroup R)
                 , ("M-m M-k",   sendMessage $ pullGroup U)
                 , ("M-m M-j",   sendMessage $ pullGroup D)
-                , ("M-m m",     withFocused (sendMessage . MergeAll))
                 , ("M-m S-m",   withFocused (sendMessage . UnMergeAll))
                 , ("M-S-m",     withFocused (sendMessage . UnMerge))
-                , ("M-m M-h",   withFocused (sendMessage . SubMessage (SomeMessage Shrink) ))
-                , ("M-m M-l",   withFocused (sendMessage . SubMessage (SomeMessage Expand) ))
-                , ("M-S-,",     onGroup W.focusUp') -- Move focus between tabs
-                , ("M-S-.",     onGroup W.focusDown') -- Move focus between tabs
+                , ("M-[",     onGroup W.focusUp') -- Move focus between tabs
+                , ("M-]",     onGroup W.focusDown') -- Move focus between tabs
                 -- topic space related keybindings
                 , ("M-;",       promptedGoto) -- TS goto
                 , ("M-S-;",     promptedShift) -- TS shift
@@ -128,6 +125,18 @@ main= do
 
 myWorkspaces = myTopics
 
+gsconfig2 colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 30, gs_cellwidth = 100 }
+greenColorizer = colorRangeFromClassName
+                      black            -- lowest inactive bg
+                      green            -- highest inactive bg
+                      yellow           -- active bg
+                      white            -- inactive fg
+                      black            -- active fg
+   where black = minBound
+         white = maxBound
+         yellow = (0xFF,0xFF,0x70)
+         green = (0x70,0xFF,0x70)
+
 myTopics :: [Topic]
 myTopics =
    [ "start" -- the first one
@@ -149,27 +158,34 @@ myTopicConfig :: TopicConfig
 myTopicConfig = TopicConfig
     { topicDirs = M.fromList $
         [ ("start", "~")
-        , ("proj", "proj")
-        , ("debug", "proj")
+        , ("email", "~")
+        , ("proj", "~/proj")
+        , ("debug", "~/proj")
         , ("xmonad", "~/.xmonad")
-        , ("films", "mov")
-        , ("music", "muza")
-        , ("doc", "Dropbox")
+        , ("admin", "~/proj")
+        , ("im", "~")
+        , ("films", "~/mov")
+        , ("music", "~/muza")
+        , ("doc", "~/Dropbox")
         , ("games", "~")
         ]
     , defaultTopicAction = const (return ())
     --, defaultTopicAction = const $ spawnShell
-    , defaultTopic = "net"
+    , defaultTopic = "start"
     , maxTopicHistory = 10
     , topicActions = M.fromList $
         [ ("start",     spawnShell)
-        , ("xmonad",    spawnShellIn ".xmonad" >>
-                        spawnShellIn ".xmonad")
         , ("web",       spawn "opera")
+        , ("im",        spawnShell >>
+                        spawn "pidgin")
+        , ("music",     spawn "clementine")
+        , ("proj",      spawnShell >*> 2)
+        , ("debug",     spawnShell >>
+                        spawn "jumanji")
+        , ("xmonad",    spawnShell >*> 2)
         , ("admin",     spawnShell >*> 3 >>
                         spawn "jumanji 172.29.0.1:8080")
         , ("films",     spawnShell)
-        , ("music",     spawn "clementine")
         , ("games",     spawnShell)
         , ("doc",       spawnShell >>
                         spawnShellIn "doc")
@@ -184,7 +200,7 @@ myShell = "zsh"
 spawnShell :: X ()
 spawnShell = currentTopicDir myTopicConfig >>= spawnShellIn
 spawnShellIn :: Dir -> X ()
-spawnShellIn dir = spawn $ "xterm -e \"cd " ++ dir ++ "; " ++ myShell ++ "\""
+spawnShellIn dir = spawn $ "urxvt -cd " ++ dir 
 goto :: Topic -> X ()
 goto = switchTopic myTopicConfig
 promptedGoto :: X ()
@@ -192,7 +208,10 @@ promptedGoto = workspacePrompt myXPConfig goto
 promptedShift :: X ()
 promptedShift = workspacePrompt myXPConfig $ windows . W.shift
 
+
 myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""
+
+myMainColor = "#00aa00"
 
 myXPConfig = defaultXPConfig {
         font = myFont
@@ -218,52 +237,39 @@ myIconFGColor = "#777777"
 myIconBGColor = "#0f0f0f"
 mySeperatorColor = "#555555"
 
-gsconfig2 colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 30, gs_cellwidth = 100 }
-greenColorizer = colorRangeFromClassName
-                      black            -- lowest inactive bg
-                      green            -- highest inactive bg
-                      yellow           -- active bg
-                      white            -- inactive fg
-                      black            -- active fg
-   where black = minBound
-         white = maxBound
-         yellow = (0xFF,0xFF,0x70)
-         green = (0x00,0xFF,0x00)
-
-
 -- layout hook
 myLayout = avoidStruts 
         $ smartBorders
         $ configurableNavigation noNavigateBorders
-        $ maximize
         $ boringWindows
-        $ onWorkspace "im" (enableTabs three_col')
-        $ onWorkspace "web" big_layouts
-        $ onWorkspace "games" big_layouts
+        $ onWorkspace "im" (im_layout')
+        $ onWorkspace "gimp" (gimpL)
         $ default_layouts
         where
-            default_layouts = (tabbed' ||| enableTabs resizable_tall' ||| enableTabs (Mirror resizable_tall') ||| magni_tall ||| mirror_magni_tall ||| Circle)
-            big_layouts = (tabbed' ||| Full ||| magni_tall)
+            default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| magni_tall ||| mirror_magni_tall)
+            --big_layouts = (tabbed' ||| Full ||| magni_tall)
             -- complex layout definitions:
-            resizable_tall' = spacing 2 $ ResizableTall 1 (3/100) (1/2) []
-            tabbed'        = withBorder 1 $ tabbed shrinkText myTabTheme
-            three_col'     = spacing 2 $ ThreeColMid 2 (3/100) (4/5)
+            resizable_tall' = named "[|]" $ maximize $ enableTabs $ spacing 2 $ ResizableTall 1 (3/100) (1/2) []
+            mirror_resizable_tall' = named "[-]" $ maximize $ enableTabs $ spacing 2 $ Mirror $ ResizableTall 1 (3/100) (1/2) []
+            tabbed'        = named "[T]" $ withBorder 1 $ maximize $ tabbed shrinkText myTabTheme
+            three_col'     = named "[3]" $ spacing 2 $ maximize $ ThreeColMid 2 (3/100) (4/5)
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
-            magni_tall = magnifier resizable_tall'
-            mirror_magni_tall = magnifier (Mirror resizable_tall')
-
+            magni_tall = named "[:]" $ magnifier resizable_tall'
+            mirror_magni_tall = named "[=]" $ magnifier (Mirror resizable_tall')
+            im_layout' = named "[im]" $ reflectHoriz $ withIM (1%5) (Role "buddy_list") tabbed'
+            gimpL = named "[gimp]" $ withIM (0.11) (Role "gimp-toolbox") $ reflectHoriz $ withIM (0.15) (Role "gimp-dock") tabbed'
          
 -- tabbed theme
 myTabTheme = defaultTheme
     { activeColor = "" ++ myDzenFGColor ++ ""
-    , inactiveColor = "" ++ myDzenBGColor ++ ""
-    , urgentColor = "" ++ myUrgentBGColor ++ ""
-    , activeBorderColor = "" ++ myDzenFGColor ++ ""
-    , inactiveBorderColor ="" ++ myDzenBGColor ++ ""
-    , urgentBorderColor = "" ++ myDzenFGColor ++ ""
     , activeTextColor = "#000000"
+    , activeBorderColor = "" ++ myDzenFGColor ++ ""
+    , inactiveColor = "" ++ myDzenBGColor ++ ""
     , inactiveTextColor = "" ++ myDzenFGColor ++ ""
+    , inactiveBorderColor ="" ++ myDzenBGColor ++ ""
+    , urgentColor = "" ++ myUrgentBGColor ++ ""
     , urgentTextColor = "" ++ myUrgentFGColor ++ ""
+    , urgentBorderColor = "" ++ myDzenFGColor ++ ""
     , fontName = "snap"
     , decoHeight = 16
     }
@@ -274,14 +280,15 @@ myManageHook = composeAll
     , className =? "MPlayer"        --> doFloat
     , className =? "Smplayer"       --> doFloat
     , className =? "feh"            --> doFloat
-    , className =? "Gimp"           --> doFloat
+    , className =? "Gimp"           --> doShift "gimp"
     , className =? "Conky"          --> doIgnore
+    , className =? "Clementine"     --> doShift "muza"
     , className =? "Skype"          --> doShift "im"
     , className =? "Pidgin"         --> doShift "im"
     , resource  =? "desktop_window" --> doIgnore
     ]
 
-myStatusBar = "xmobar -x 1"
+myStatusBar = "xmobar -x 0"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=#ff0000>") "</fc>]" . \wsId -> dropIx wsId
@@ -292,20 +299,9 @@ myXmobarPP h = defaultPP
     , ppSep = " "
     , ppWsSep = " "
     , ppTitle = xmobarColor (""++ myIconFGColor ++ "") "" . wrap "[ " " ]"
-    , ppLayout = xmobarColor ("red") "" .
-        (\x -> case x of
-        "Full" -> "[ ]"
-        "Maximize Tabbed Spacing 2 ResizableTall" -> "[|]"
-        "Maximize Magnifier Spacing 2 ResizableTall" -> "[:]"
-        "Maximize Tabbed Mirror Spacing 2 ResizableTall" -> "[-]"
-        "Maximize Magnifier Mirror Spacing 2 ResizableTall" -> "[=]"
-        "Maximize Tabbed Simplest" -> "[T]"
-        "Maximize Tabbed Spacing 2 ThreeCol" -> "[3]"
-        "Maximize Circle" -> "[O]"
-        _ -> x
-        )
+    , ppLayout = xmobarColor ("red") "" 
     , ppOutput = hPutStrLn h
     }
     where
     dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
-    staticWs = ["start", "web", "proj", "@", "admin"]
+    staticWs = ["start", "web", "proj", "email", "admin"]

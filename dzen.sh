@@ -7,7 +7,9 @@
 # Configuration
 ##################################################################
 # Dzen's font
-DZENFNT="snap"
+
+MAIN_COLOR="#00aa00"
+DZENFNT="-*-snap-*-*-*-*-12-*-*-*-*-*-*-*"
 # Dzen's background colour
 DZENBG='#262626'
 # Dzen's forground colour
@@ -169,7 +171,6 @@ DATECOUNTER=0;CPUTEMPCOUNTER=0;VOLUMECOUNTER=0;BATTCOUNTER=0;WIFICOUNTER=0;
 PDATE=$(fdate)
 PTIME=$(ftime)
 PCPU=$(fcpu)
-PCPUTEMP=$(fcputemp)
 PVOLUME=$(fvolume)
 #BATTERY=$(fbattery)
 #WIFI=$(fwifi)
@@ -195,11 +196,6 @@ while :; do
                 DATECOUNTER=0
         fi
 
-        if [ $CPUTEMPCOUNTER -ge $CPUTEMPIVAL ]; then
-                PCPUTEMP=$(fcputemp)
-                CPUTEMPCOUNTER=0
-        fi
-
         if [ $VOLUMECOUNTER -ge $VOLUMEIVAL ]; then
                 PVOLUME=$(fvolume)
                 VOLUMECOUNTER=0
@@ -215,7 +211,7 @@ while :; do
         TXR=$(printf "%d\n" $(echo "($TXBN - $TXB) / 1024/${SLEEP}" | bc))
 
         # Print out 
-        echo " ^fg(#0069e0)^p(0)^i(${ICONPATH}/cpu.xbm) ^fg()${PCPU} ${WIFI} ${BATTERY} ^fg(#80AA83)^i(${ICONPATH}/temp.xbm) ^fg()${PCPUTEMP} ^fg(#80AA83)^p(0)^i(${ICONPATH}/net_down_02.xbm)^fg()${RXR}kB/s ^fg(orange3)^p(0)^i(${ICONPATH}/net_up_02.xbm)^fg()${TXR}kB/s^fg() ^fg() ^fg(#0069e0)^p(0)^i(${ICONPATH}/spkr_01.xbm) ${PVOLUME} ^fg(#FFFFFF)${PDATE} ^bg(#0069e0) ${PTIME} "
+        echo " ^fg($MAIN_COLOR)^p(0)^i(${ICONPATH}/cpu.xbm) ^fg()${PCPU} ^fg(#80AA83)^p(0)^i(${ICONPATH}/net_down_02.xbm)^fg()${RXR}kB/s ^fg(orange3)^p(0)^i(${ICONPATH}/net_up_02.xbm)^fg()${TXR}kB/s^fg() ^fg() ^fg($MAIN_COLOR)^p(0)^i(${ICONPATH}/spkr_01.xbm) ${PVOLUME} ^fg(#FFFFFF)${PDATE} ^bg($MAIN_COLOR) ${PTIME} "
 
         # Reset old rates
         RXB=$RXBN; TXB=$TXBN

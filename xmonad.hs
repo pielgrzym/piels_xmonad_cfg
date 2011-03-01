@@ -258,8 +258,8 @@ myLayout = avoidStruts
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
             magni_tall = named "[:]" $ magnifier resizable_tall'
             mirror_magni_tall = named "[=]" $ magnifier (Mirror resizable_tall')
-            im_layout' = reflectHoriz $ withIM (1%5) (Role "buddy_list") tabbed'
-            gimpL = withIM (0.11) (Role "gimp-toolbox") $ reflectHoriz $ withIM (0.15) (Role "gimp-dock") tabbed'
+            im_layout' = named "[im]" $ reflectHoriz $ withIM (1%5) (Role "buddy_list") tabbed'
+            gimpL = named "[gimp]" $ withIM (0.11) (Role "gimp-toolbox") $ reflectHoriz $ withIM (0.15) (Role "gimp-dock") tabbed'
          
 -- tabbed theme
 myTabTheme = defaultTheme

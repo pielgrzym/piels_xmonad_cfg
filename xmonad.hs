@@ -72,9 +72,9 @@ main= do
                 , ("M-u",       focusUrgent)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
                 -- eof cmus control
-                , ("M-<F8>",    sendMessage $ JumpToLayout "[O]")
-                , ("M-<F9>",    sendMessage $ JumpToLayout "[T]")
-                , ("M-<F10>",   sendMessage $ JumpToLayout "[|]")
+                , ("M-<F8>",    sendMessage $ JumpToLayout "[T]")
+                , ("M-<F9>",    sendMessage $ JumpToLayout "[|]")
+                , ("M-<F10>",   sendMessage $ JumpToLayout "[-]")
                 , ("M-<F11>",   sendMessage $ JumpToLayout "[:]")
                 , ("M-<F12>",   sendMessage $ JumpToLayout "[=]")
                 , ("M-S-c",     kill1)  -- remove a window copy or kill window otherwise

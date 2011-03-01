@@ -41,7 +41,9 @@ import XMonad.Prompt.Workspace
 import XMonad.Actions.FloatKeys
 main= do 
         bar <- spawnPipe myStatusBar
-        spawn "xmobar ~/.xmonad/xmobarrc2 -x 1"
+        --spawn "xmobar ~/.xmonad/xmobarrc2 -x 1"
+        spawn "unclutter -idle 3"
+        spawn "syndaemon -k -d -i 2 -t"
         --spawn "unclutter -idle 3"
         spawn "nitrogen --restore"
         --urxvtd <- spawnPipe "urxvtd -q -f"
@@ -288,7 +290,7 @@ myManageHook = composeAll
     , resource  =? "desktop_window" --> doIgnore
     ]
 
-myStatusBar = "xmobar -x 0"
+myStatusBar = "xmobar -x 1"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=#ff0000>") "</fc>]" . \wsId -> dropIx wsId

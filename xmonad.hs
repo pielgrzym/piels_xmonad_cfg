@@ -242,14 +242,14 @@ myLayout = avoidStruts
         $ smartBorders
         $ configurableNavigation noNavigateBorders
         $ boringWindows
-        $ onWorkspace "im" (enableTabs three_col' ||| im_layout')
-        $ onWorkspace "web" big_layouts
-        $ onWorkspace "games" big_layouts
+        $ onWorkspace "im" (im_layout')
+        -- $ onWorkspace "web" big_layouts
+        -- $ onWorkspace "games" big_layouts
         $ onWorkspace "gimp" (gimpL)
         $ default_layouts
         where
-            default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| magni_tall ||| mirror_magni_tall ||| circle')
-            big_layouts = (tabbed' ||| Full ||| magni_tall)
+            default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| magni_tall ||| mirror_magni_tall)
+            --big_layouts = (tabbed' ||| Full ||| magni_tall)
             -- complex layout definitions:
             resizable_tall' = named "[|]" $ maximize $ enableTabs $ spacing 2 $ ResizableTall 1 (3/100) (1/2) []
             mirror_resizable_tall' = named "[-]" $ maximize $ enableTabs $ spacing 2 $ Mirror $ ResizableTall 1 (3/100) (1/2) []
@@ -258,9 +258,8 @@ myLayout = avoidStruts
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
             magni_tall = named "[:]" $ magnifier resizable_tall'
             mirror_magni_tall = named "[=]" $ magnifier (Mirror resizable_tall')
-            circle' = named "[O]" $ Circle
             im_layout' = reflectHoriz $ withIM (1%5) (Role "buddy_list") tabbed'
-            gimpL = withIM (0.11) (Role "gimp-toolbox") $ reflectHoriz $ withIM (0.15) (Role "gimp-dock") Full
+            gimpL = withIM (0.11) (Role "gimp-toolbox") $ reflectHoriz $ withIM (0.15) (Role "gimp-dock") tabbed'
          
 -- tabbed theme
 myTabTheme = defaultTheme

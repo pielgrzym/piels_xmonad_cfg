@@ -39,6 +39,9 @@ import XMonad.Actions.TopicSpace
 import XMonad.Prompt
 import XMonad.Prompt.Workspace
 import XMonad.Actions.FloatKeys
+
+import XMonad.Actions.UpdatePointer
+
 main= do 
         bar <- spawnPipe myStatusBar
         spawn "xmobar ~/.xmonad/xmobarrc2 -x 1"
@@ -56,9 +59,8 @@ main= do
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
                 , manageHook         = myManageHook <+> manageDocks 
-                -- , manageHook         = myManageHook <+> manageDocks <+> manageMonitor clock
                 , layoutHook         = myLayout
-                , logHook            = dynamicLogWithPP $ myXmobarPP bar
+                , logHook            = (dynamicLogWithPP $ myXmobarPP bar) >> updatePointer Nearest
                 }
                 `removeKeysP` [ "M-w", "M-e", "M-b" ] 
                 `additionalKeysP`

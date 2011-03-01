@@ -60,7 +60,7 @@ main= do
                 , workspaces         = myWorkspaces
                 , manageHook         = myManageHook <+> manageDocks 
                 , layoutHook         = myLayout
-                , logHook            = (dynamicLogWithPP $ myXmobarPP bar) >> updatePointer Nearest
+                , logHook            = (dynamicLogWithPP $ myXmobarPP bar) >> updatePointer (Relative 0.5 0.5)
                 }
                 `removeKeysP` [ "M-w", "M-e", "M-b" ] 
                 `additionalKeysP`
@@ -283,6 +283,7 @@ myManageHook = composeAll
     [ isFullscreen                  --> doFullFloat
     , className =? "MPlayer"        --> doFloat
     , className =? "Smplayer"       --> doFloat
+    , className =? "Xmessage"       --> doCenterFloat
     , className =? "feh"            --> doFloat
     , className =? "Gimp"           --> doShift "gimp"
     , className =? "Conky"          --> doIgnore

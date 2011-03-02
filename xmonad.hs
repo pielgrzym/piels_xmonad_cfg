@@ -2,6 +2,7 @@ import XMonad hiding ( (|||) )
 import XMonad.Layout.LayoutCombinators
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageHelpers(doRectFloat)
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeysP, removeKeysP)
 import System.IO
@@ -288,6 +289,7 @@ myManageHook = composeAll
     , className =? "Gimp"           --> doShift "gimp"
     , className =? "Conky"          --> doIgnore
     , className =? "Clementine"     --> doShift "muza"
+    , title     =? "Zapisz jako"    --> doCenterFloat
     , className =? "Skype"          --> doShift "im"
     , className =? "Pidgin"         --> doShift "im"
     , resource  =? "desktop_window" --> doIgnore

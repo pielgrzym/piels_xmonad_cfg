@@ -2,6 +2,7 @@ import XMonad hiding ( (|||) )
 import XMonad.Layout.LayoutCombinators
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageHelpers(doRectFloat)
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeysP, removeKeysP)
 import System.IO
@@ -39,6 +40,9 @@ import XMonad.Actions.TopicSpace
 import XMonad.Prompt
 import XMonad.Prompt.Workspace
 import XMonad.Actions.FloatKeys
+
+import XMonad.Actions.UpdatePointer
+
 main= do 
         bar <- spawnPipe myStatusBar
         --spawn "xmobar ~/.xmonad/xmobarrc2 -x 1"
@@ -55,9 +59,8 @@ main= do
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
                 , manageHook         = myManageHook <+> manageDocks 
-                -- , manageHook         = myManageHook <+> manageDocks <+> manageMonitor clock
                 , layoutHook         = myLayout
-                , logHook            = dynamicLogWithPP $ myXmobarPP bar
+                , logHook            = (dynamicLogWithPP $ myXmobarPP bar) >> updatePointer (Relative 0.5 0.5)
                 }
                 `removeKeysP` [ "M-w", "M-e", "M-b" ] 
                 `additionalKeysP`
@@ -278,10 +281,12 @@ myManageHook = composeAll
     [ isFullscreen                  --> doFullFloat
     , className =? "MPlayer"        --> doFloat
     , className =? "Smplayer"       --> doFloat
+    , className =? "Xmessage"       --> doCenterFloat
     , className =? "feh"            --> doFloat
     , className =? "Gimp"           --> doShift "gimp"
     , className =? "Conky"          --> doIgnore
     , className =? "Clementine"     --> doShift "muza"
+    , title     =? "Zapisz jako"    --> doCenterFloat
     , className =? "Skype"          --> doShift "im"
     , className =? "Pidgin"         --> doShift "im"
     , resource  =? "desktop_window" --> doIgnore

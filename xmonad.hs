@@ -315,7 +315,11 @@ myXmobarPP h = defaultPP
     dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
     staticWs = ["start", "web", "proj", "email", "admin"]
 
+myXPInboxConfig = myXPConfig {
+        font = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*"
+}
+
 inboxPrompt :: X()
-inboxPrompt = inputPrompt myXPConfig "INBOX" ?+ addToInbox
+inboxPrompt = inputPrompt myXPInboxConfig "INBOX" ?+ addToInbox
 addToInbox :: String -> X()
 addToInbox x = liftIO $ appendFile "/home/pielgrzym/otl/inbox.otl" ("[_] " ++ x ++ "\n")

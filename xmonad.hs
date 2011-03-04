@@ -39,6 +39,7 @@ import qualified Data.Map as M
 import XMonad.Actions.TopicSpace
 import XMonad.Prompt
 import XMonad.Prompt.Workspace
+import XMonad.Prompt.Input
 import XMonad.Actions.FloatKeys
 
 import XMonad.Actions.UpdatePointer
@@ -72,6 +73,7 @@ main= do
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
+                , ("M-c",       inboxPrompt)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
                 -- eof cmus control
                 , ("M-<F8>",    sendMessage $ JumpToLayout "[T]")
@@ -309,3 +311,12 @@ myXmobarPP h = defaultPP
     where
     dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
     staticWs = ["start", "web", "proj", "email", "admin"]
+
+myXPInboxConfig = myXPConfig {
+        font = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*"
+}
+
+inboxPrompt :: X()
+inboxPrompt = inputPrompt myXPInboxConfig "INBOX" ?+ addToInbox
+addToInbox :: String -> X()
+addToInbox x = liftIO $ appendFile "/home/pielgrzym/otl/inbox.otl" ("[_] " ++ x ++ "\n")

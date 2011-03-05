@@ -219,11 +219,11 @@ myMainColor = "#00aa00"
 
 myXPConfig = defaultXPConfig {
         font = myFont
-        , fgColor = "green"
-        , bgColor = "#262626"
+        , fgColor = "black"
+        , bgColor = "green"
         , promptBorderWidth = 0
-        , fgHLight = "black"
-        , bgHLight = "green"
+        , fgHLight = "green"
+        , bgHLight = "black"
         , autoComplete = Just 1000
 }
 

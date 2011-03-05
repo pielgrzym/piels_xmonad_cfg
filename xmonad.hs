@@ -54,7 +54,7 @@ main= do
                $ defaultConfig 
                 { 
                 borderWidth          = 3
-                , terminal           = "urxvt"
+                , terminal           = "urxvtc"
                 , normalBorderColor  = "#004400"
                 , focusedBorderColor = myMainColor
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 

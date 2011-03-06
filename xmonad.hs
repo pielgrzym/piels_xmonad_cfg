@@ -98,23 +98,23 @@ main= do
                 , ("M-S-;",     promptedShift) -- TS shift
                 , ("M-'",       toggleWS) -- switch to previous topic
                 -- window nav
-                , ("C-M-l",       sendMessage $ Go R)
-                , ("C-M-h",       sendMessage $ Go L)
-                , ("C-M-j",       sendMessage $ Go D)
-                , ("C-M-k",       sendMessage $ Go U)
+                , ("C-M-l",     sendMessage $ Go R)
+                , ("C-M-h",     sendMessage $ Go L)
+                , ("C-M-j",     sendMessage $ Go D)
+                , ("C-M-k",     sendMessage $ Go U)
                 -- float
-                , ("M-<L>", withFocused (keysMoveWindow (-20,0))) -- move float left
-                , ("M-<R>", withFocused (keysMoveWindow (20,0))) -- move float right
-                , ("M-<U>", withFocused (keysMoveWindow (0,-20))) -- move float up
-                , ("M-<D>", withFocused (keysMoveWindow (0,20))) -- move float down
-                , ("M-S-<L>", withFocused (keysResizeWindow (-20,0) (0,0))) --shrink float at right
-                , ("M-S-<R>", withFocused (keysResizeWindow (20,0) (0,0))) --expand float at right
-                , ("M-S-<D>", withFocused (keysResizeWindow (0,20) (0,0))) --expand float at bottom
-                , ("M-S-<U>", withFocused (keysResizeWindow (0,-20) (0,0))) --shrink float at bottom
-                , ("M-C-<L>", withFocused (keysResizeWindow (20,0) (1,0))) --expand float at left
-                , ("M-C-<R>", withFocused (keysResizeWindow (-20,0) (1,0))) --shrink float at left
-                , ("M-C-<U>", withFocused (keysResizeWindow (0,20) (0,1))) --expand float at top
-                , ("M-C-<D>", withFocused (keysResizeWindow (0,-20) (0,1))) --shrink float at top
+                , ("M-<L>",     withFocused (keysMoveWindow (-20,0))) -- move float left
+                , ("M-<R>",     withFocused (keysMoveWindow (20,0))) -- move float right
+                , ("M-<U>",     withFocused (keysMoveWindow (0,-20))) -- move float up
+                , ("M-<D>",     withFocused (keysMoveWindow (0,20))) -- move float down
+                , ("M-S-<L>",   withFocused (keysResizeWindow (-20,0) (0,0))) --shrink float at right
+                , ("M-S-<R>",   withFocused (keysResizeWindow (20,0) (0,0))) --expand float at right
+                , ("M-S-<D>",   withFocused (keysResizeWindow (0,20) (0,0))) --expand float at bottom
+                , ("M-S-<U>",   withFocused (keysResizeWindow (0,-20) (0,0))) --shrink float at bottom
+                , ("M-C-<L>",   withFocused (keysResizeWindow (20,0) (1,0))) --expand float at left
+                , ("M-C-<R>",   withFocused (keysResizeWindow (-20,0) (1,0))) --shrink float at left
+                , ("M-C-<U>",   withFocused (keysResizeWindow (0,20) (0,1))) --expand float at top
+                , ("M-C-<D>",   withFocused (keysResizeWindow (0,-20) (0,1))) --shrink float at top
                 ]
                 ++
                 -- below: screen swithing with 'i' and 'o'
@@ -220,11 +220,11 @@ myMainColor = "#00aa00"
 
 myXPConfig = defaultXPConfig {
         font = myFont
-        , fgColor = "green"
-        , bgColor = "#262626"
+        , fgColor = "black"
+        , bgColor = "green"
         , promptBorderWidth = 0
-        , fgHLight = "black"
-        , bgHLight = "green"
+        , fgHLight = "green"
+        , bgHLight = "black"
         , autoComplete = Just 1000
 }
 
@@ -248,8 +248,6 @@ myLayout = avoidStruts
         $ configurableNavigation noNavigateBorders
         $ boringWindows
         $ onWorkspace "im" (im_layout')
-        -- $ onWorkspace "web" big_layouts
-        -- $ onWorkspace "games" big_layouts
         $ onWorkspace "gimp" (gimpL)
         $ default_layouts
         where

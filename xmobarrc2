@@ -7,9 +7,10 @@ Config { font = "-*-snap-*-*-*-*-10-*-*-*-*-*-*-u"
                     , Run DiskU [("/", "[Root free: <free>]"), ("/home", "[Home free: <free>]")] [] 50
                     , Run TopProc [] 50
                     , Run TopMem [] 50
-                    , Run Com "~/.xmonad/clementine.sh" [] "clementine"  200
+                    , Run Com "~/.xmonad/clementine.sh" [] "clementine" 200
+                    , Run Com "dropbox status | tail -n 1" [] "dropbox" 100
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "[Now playing: %clementine%] }{ [TopCpu: %top%] [TopMem: %topmem%] %disku% %coretemp%"
+       , template = "[Now playing: %clementine%] [Dropbox: %dropbox%] }{ [TopCpu: %top%] [TopMem: %topmem%] %disku% %coretemp%"
        }

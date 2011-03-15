@@ -95,6 +95,7 @@ main= do
                 -- topic space related keybindings
                 , ("M-;",       promptedGoto) -- TS goto
                 , ("M-S-;",     promptedShift) -- TS shift
+                , ("M-C-;",     promptedCopy) -- TS shift
                 , ("M-'",       toggleWS) -- switch to previous topic
                 -- window nav
                 , ("C-M-l",     sendMessage $ Go R)
@@ -211,7 +212,8 @@ promptedGoto :: X ()
 promptedGoto = workspacePrompt myXPConfig goto
 promptedShift :: X ()
 promptedShift = workspacePrompt myXPConfig $ windows . W.shift
-
+promptedCopy :: X ()
+promptedCopy = workspacePrompt myXPConfig $ windows . copy
 
 myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""
 

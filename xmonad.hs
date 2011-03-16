@@ -76,6 +76,9 @@ main= do
                 , ("M-u",       focusUrgent)
                 , ("M-c",       inboxPrompt)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
+                -- audio output controls
+                , ("M-<F1>",    spawn "~/.xmonad/sound_output.sh 0") -- headphones
+                , ("M-<F2>",    spawn "~/.xmonad/sound_output.sh 1") -- speakers
                 -- eof cmus control
                 , ("M-<F8>",    sendMessage $ JumpToLayout "[T]")
                 , ("M-<F9>",    sendMessage $ JumpToLayout "[|]")
@@ -91,8 +94,8 @@ main= do
                 , ("M-m M-j",   sendMessage $ pullGroup D)
                 , ("M-m S-m",   withFocused (sendMessage . UnMergeAll))
                 , ("M-S-m",     withFocused (sendMessage . UnMerge))
-                , ("M-[",     onGroup W.focusUp') -- Move focus between tabs
-                , ("M-]",     onGroup W.focusDown') -- Move focus between tabs
+                , ("M-[",       onGroup W.focusUp') -- Move focus between tabs
+                , ("M-]",       onGroup W.focusDown') -- Move focus between tabs
                 -- topic space related keybindings
                 , ("M-;",       promptedGoto) -- TS goto
                 , ("M-S-;",     promptedShift) -- TS shift
@@ -239,7 +242,7 @@ myNormalFGColor = "#ffffff"
 myNormalBGColor = "#0f0f0f"
 myFocusedFGColor = "#f0f0f0"
 myFocusedBGColor = "#333333"
-myUrgentFGColor = "#00ff00"
+myUrgentFGColor = "red"
 myUrgentBGColor = "#0077ff"
 myIconFGColor = "#777777"
 myIconBGColor = "#0f0f0f"

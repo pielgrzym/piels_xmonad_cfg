@@ -185,10 +185,11 @@ myTopicConfig = TopicConfig
     , topicActions = M.fromList $
         [ ("start",     spawnShell)
         , ("web",       spawn "opera")
-        , ("im",        spawnShell >>
-                        spawn "pidgin")
-        , ("music",     spawn "clementine")
-        , ("proj",      spawnShell >*> 2)
+        , ("im",        spawnShell)
+        , ("music",     spawnShell >*> 2 >>
+                        (sendMessage $ JumpToLayout "[-]"))
+        , ("proj",      spawnShell >*> 2 >>
+                        (sendMessage $ JumpToLayout "[-]"))
         , ("debug",     spawnShell >>
                         spawn "jumanji")
         , ("xmonad",    spawnShell >*> 2)
@@ -200,7 +201,7 @@ myTopicConfig = TopicConfig
                         spawnShellIn "doc")
         , ("vbox",      spawn "VirtualBox")
         , ("gimp",      spawn "gimp")
-        , ("email",     spawn "jumanji poczta.prymityw.pl")
+        , ("email",     spawn "chromium")
         ]
     }
 

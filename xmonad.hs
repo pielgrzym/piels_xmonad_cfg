@@ -46,9 +46,9 @@ import XMonad.Actions.UpdatePointer
 
 main= do 
         bar <- spawnPipe myStatusBar
-        spawn "xmobar ~/.xmonad/xmobarrc2 -x 1"
+        --spawn "xmobar ~/.xmonad/xmobarrc2 -x 1"
         --spawn "unclutter -idle 3"
-        spawn "nitrogen --restore"
+        --spawn "nitrogen --restore"
         --urxvtd <- spawnPipe "urxvtd -q -f"
         checkTopicConfig myTopics myTopicConfig
         xmonad $ withUrgencyHook NoUrgencyHook

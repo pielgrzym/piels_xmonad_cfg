@@ -1,4 +1,4 @@
-Config { font = "-*-snap-*-*-*-*-10-*-*-*-*-*-*-u"
+Config { font = "xft:Terminus:pixelsize=12"
        , bgColor = "#262626"
        , fgColor = "#00ff00"
        , position = Top

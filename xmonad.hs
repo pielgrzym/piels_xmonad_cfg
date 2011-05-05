@@ -157,7 +157,7 @@ myTopics =
    -- >9 topics:
    , "vbox"
    , "1", "2", "3", "4" -- general purpose topics
-   , "xmonad"
+   , "cfg"
    , "films"
    , "gimp"
    , "games"
@@ -170,7 +170,7 @@ myTopicConfig = TopicConfig
         , ("email", "~")
         , ("proj", "~/proj")
         , ("debug", "~/proj")
-        , ("xmonad", "~/.xmonad")
+        , ("cfg", "~/.xmonad")
         , ("admin", "~/proj")
         , ("im", "~")
         , ("films", "~/mov")
@@ -192,7 +192,9 @@ myTopicConfig = TopicConfig
                         (sendMessage $ JumpToLayout "[-]"))
         , ("debug",     spawnShell >>
                         spawn "jumanji")
-        , ("xmonad",    spawnShell >*> 2)
+        , ("cfg",       spawnShell >>
+                        spawnShellIn ".zsh" >>
+                        spawnShellIn ".vim")
         , ("admin",     spawnShell >*> 3 >>
                         spawn "jumanji 172.29.0.1:8080")
         , ("films",     spawnShell)

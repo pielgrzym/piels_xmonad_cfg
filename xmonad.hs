@@ -236,7 +236,7 @@ myXPConfig = defaultXPConfig {
 }
 
 -- Color, font and iconpath definitions:
-myFont = "snap"
+myFont = "xft:snap:pixelsize=10"
 myDzenFGColor = "green"
 myDzenBGColor = "#262626"
 myNormalFGColor = "#ffffff"
@@ -282,7 +282,7 @@ myTabTheme = defaultTheme
     , urgentColor = "" ++ myUrgentBGColor ++ ""
     , urgentTextColor = "" ++ myUrgentFGColor ++ ""
     , urgentBorderColor = "" ++ myDzenFGColor ++ ""
-    , fontName = "snap"
+    , fontName = "xft:snap:pixelsize=10"
     , decoHeight = 16
     }
 
@@ -321,7 +321,8 @@ myXmobarPP h = defaultPP
     staticWs = ["start", "web", "proj", "email", "admin"]
 
 myXPInboxConfig = myXPConfig {
-        font = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*"
+        font = "xft:Terminus:pixelsize=12"
+        --font = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*"
 }
 
 inboxPrompt :: X()

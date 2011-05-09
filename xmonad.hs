@@ -304,7 +304,7 @@ myManageHook = composeAll
     , resource  =? "desktop_window" --> doIgnore
     ]
 
-myStatusBar = "xmobar -x 0"
+myStatusBar = "xmobar -x 1"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=#ff0000>") "</fc>]" . \wsId -> dropIx wsId

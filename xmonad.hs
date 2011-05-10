@@ -77,9 +77,9 @@ main= do
                 , ("M-c",       inboxPrompt)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
                 -- audio controls
-                , ("<XF86AudioMute>",           spawn "amixer -c 0 -- sset Master toggle")
-                , ("<XF86AudioLowerVolume>",    spawn "amixer -c 0 -- sset Master 5%-")
-                , ("<XF86AudioRaiseVolume>",    spawn "amixer -c 0 -- sset Master 5%+")
+                , ("<XF86AudioMute>",           spawn "amixer -c 0 -- sset Master toggle && echo \"Mute!\" | dzen2 -p 1 -bg yellow -fg black -fn '-*-terminus-*-*-*-*-12-*-*-*-*-*-*'")
+                , ("<XF86AudioLowerVolume>",    spawn "amixer -c 0 -- sset Master 5%- && echo \"Sound down!\" | dzen2 -p 1 -bg yellow -fg black -fn '-*-terminus-*-*-*-*-12-*-*-*-*-*-*'")
+                , ("<XF86AudioRaiseVolume>",    spawn "amixer -c 0 -- sset Master 5%+&& echo \"Sound up!\" | dzen2 -p 1 -bg yellow -fg black -fn '-*-terminus-*-*-*-*-12-*-*-*-*-*-*'")
                 -- screen lock
                 , ("<XF86ScreenSaver>",    spawn "slock")
                 -- eof cmus control

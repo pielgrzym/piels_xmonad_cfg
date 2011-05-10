@@ -76,9 +76,12 @@ main= do
                 , ("M-u",       focusUrgent)
                 , ("M-c",       inboxPrompt)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
-                -- audio output controls
-                , ("M-<F1>",    spawn "~/.xmonad/sound_output.sh 0") -- headphones
-                , ("M-<F2>",    spawn "~/.xmonad/sound_output.sh 1") -- speakers
+                -- audio controls
+                , ("<XF86AudioMute>",           spawn "amixer -c 0 -- sset Master toggle")
+                , ("<XF86AudioLowerVolume>",    spawn "amixer -c 0 -- sset Master 5%-")
+                , ("<XF86AudioRaiseVolume>",    spawn "amixer -c 0 -- sset Master 5%+")
+                -- screen lock
+                , ("<XF86ScreenSaver>",    spawn "slock")
                 -- eof cmus control
                 , ("M-<F8>",    sendMessage $ JumpToLayout "[T]")
                 , ("M-<F9>",    sendMessage $ JumpToLayout "[|]")

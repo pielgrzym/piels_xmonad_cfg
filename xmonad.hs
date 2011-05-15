@@ -127,7 +127,7 @@ main= do
                 -- below: screen swithing with 'i' and 'o'
                 [("M-"++m++[key], screenWorkspace sc >>= flip whenJust (windows . f))
                         | (f, m) <- [(W.view, ""), (W.shift, "S-"), (copy, "C-")]
-                        , (key, sc) <- zip "io" [0 .. ]]
+                        , (key, sc) <- zip "oi" [0 .. ]]
                 ++
                 -- below: workspace greedy switch with M-[0..9], move to ws with M-S-[0..9] and copy to ws with M-C-[0..9]
                 [("M-"++m++[key], action tag)
@@ -189,7 +189,7 @@ myTopicConfig = TopicConfig
         [ ("start",     spawnShell)
         , ("web",       spawn "opera")
         , ("im",        spawnShell)
-        , ("music",     spawnShell >*> 2 >>
+        , ("music",     spawn "clementine" >>
                         (sendMessage $ JumpToLayout "[-]"))
         , ("proj",      spawnShell >*> 2 >>
                         (sendMessage $ JumpToLayout "[-]"))
@@ -307,7 +307,7 @@ myManageHook = composeAll
     , resource  =? "desktop_window" --> doIgnore
     ]
 
-myStatusBar = "xmobar -x 1"
+myStatusBar = "xmobar -x 0"
  
 myXmobarPP h = defaultPP
     { ppCurrent = wrap ("[<fc=#ff0000>") "</fc>]" . \wsId -> dropIx wsId

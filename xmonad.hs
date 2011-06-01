@@ -77,6 +77,7 @@ main= do
                 , ("M-c",       inboxPrompt)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
                 -- audio controls
+                , ("<XF86Launch1>",           spawn "~/.xmonad/toggle_display.sh")
                 , ("<XF86AudioMute>",           spawn "amixer -c 0 -- sset Master toggle && echo \"Mute!\" | dzen2 -xs 1 -p 1 -bg yellow -fg black -fn '-*-terminus-*-*-*-*-12-*-*-*-*-*-*'")
                 , ("<XF86AudioLowerVolume>",    spawn "amixer -c 0 -- sset Master 5%- && echo \"Sound down!\" | dzen2 -xs 1 -p 1 -bg yellow -fg black -fn '-*-terminus-*-*-*-*-12-*-*-*-*-*-*'")
                 , ("<XF86AudioRaiseVolume>",    spawn "amixer -c 0 -- sset Master 5%+&& echo \"Sound up!\" | dzen2 -xs 1 -p 1 -bg yellow -fg black -fn '-*-terminus-*-*-*-*-12-*-*-*-*-*-*'")
@@ -187,7 +188,7 @@ myTopicConfig = TopicConfig
     , maxTopicHistory = 10
     , topicActions = M.fromList $
         [ ("start",     spawnShell)
-        , ("web",       spawn "opera")
+        , ("web",       spawn "firefox")
         , ("im",        spawnShell)
         , ("music",     spawn "clementine" >>
                         (sendMessage $ JumpToLayout "[-]"))

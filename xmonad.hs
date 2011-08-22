@@ -157,7 +157,7 @@ myTopics =
    -- >9 topics:
    , "vbox"
    , "1", "2", "3", "4" -- general purpose topics
-   , "xmonad"
+   , "cfg"
    , "films"
    , "gimp"
    , "games"
@@ -170,7 +170,7 @@ myTopicConfig = TopicConfig
         , ("email", "~")
         , ("proj", "~/proj")
         , ("debug", "~/proj")
-        , ("xmonad", "~/.xmonad")
+        , ("cfg", "~/.xmonad")
         , ("admin", "~/proj")
         , ("im", "~")
         , ("films", "~/mov")
@@ -184,15 +184,17 @@ myTopicConfig = TopicConfig
     , maxTopicHistory = 10
     , topicActions = M.fromList $
         [ ("start",     spawnShell)
-        , ("web",       spawn "opera")
+        , ("web",       spawn "firefox")
         , ("im",        spawnShell)
-        , ("music",     spawnShell >*> 2 >>
+        , ("music",     spawn "clementine" >>
                         (sendMessage $ JumpToLayout "[-]"))
         , ("proj",      spawnShell >*> 2 >>
                         (sendMessage $ JumpToLayout "[-]"))
         , ("debug",     spawnShell >>
                         spawn "jumanji")
-        , ("xmonad",    spawnShell >*> 2)
+        , ("cfg",       spawnShell >>
+                        spawnShellIn ".zsh" >>
+                        spawnShellIn ".vim")
         , ("admin",     spawnShell >*> 3 >>
                         spawn "jumanji 172.29.0.1:8080")
         , ("films",     spawnShell)
@@ -236,7 +238,7 @@ myXPConfig = defaultXPConfig {
 }
 
 -- Color, font and iconpath definitions:
-myFont = "snap"
+myFont = "xft:snap:pixelsize=10"
 myDzenFGColor = "green"
 myDzenBGColor = "#262626"
 myNormalFGColor = "#ffffff"
@@ -282,7 +284,7 @@ myTabTheme = defaultTheme
     , urgentColor = "" ++ myUrgentBGColor ++ ""
     , urgentTextColor = "" ++ myUrgentFGColor ++ ""
     , urgentBorderColor = "" ++ myDzenFGColor ++ ""
-    , fontName = "snap"
+    , fontName = "xft:snap:pixelsize=10"
     , decoHeight = 16
     }
 
@@ -321,7 +323,8 @@ myXmobarPP h = defaultPP
     staticWs = ["start", "web", "proj", "email", "admin"]
 
 myXPInboxConfig = myXPConfig {
-        font = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*"
+        font = "xft:Terminus:pixelsize=12"
+        --font = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*"
 }
 
 inboxPrompt :: X()

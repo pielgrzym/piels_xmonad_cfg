@@ -14,6 +14,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Actions.CycleWS
 -- copy windows! tag-like functionality
 import XMonad.Actions.CopyWindow
+import XMonad.Actions.DynamicWorkspaces
 -- extra layouts
 import XMonad.Layout.PerWorkspace 
 import XMonad.Layout.ResizableTile
@@ -70,11 +71,13 @@ main= do
                 [ ("M-r",       spawn (myDmenu))
                 , ("M-g",       goToSelected $ gsconfig2 greenColorizer) -- window grid
                 , ("M-j",       focusDown)
+                , ("M-<Return>", spawn("urxvt"))
+                , ("M-S-<Return>", windows W.swapMaster)
                 , ("M-k",       focusUp)
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
-                , ("M-c",       inboxPrompt)
+                -- , ("M-c",       inboxPrompt)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
                 -- audio output controls
                 , ("M-<F1>",    spawn "~/.xmonad/sound_output.sh 0") -- headphones
@@ -100,6 +103,8 @@ main= do
                 , ("M-;",       promptedGoto) -- TS goto
                 , ("M-S-;",     promptedShift) -- TS shift
                 , ("M-C-;",     promptedCopy) -- TS shift
+                , ("M-d",       promptNewWS) -- new workspace
+                , ("M-S-<Backspace>",     removeWorkspace) -- remove workspace
                 , ("M-'",       toggleWS) -- switch to previous topic
                 -- window nav
                 , ("C-M-l",     sendMessage $ Go R)
@@ -150,17 +155,14 @@ myTopics :: [Topic]
 myTopics =
    [ "start" -- the first one
    , "email"
-   , "proj", "debug"
-   , "doc", "music", "web"
+   , "proj"
+   , "music", "web"
    , "admin"
    , "im"
-   -- >9 topics:
    , "vbox"
-   , "1", "2", "3", "4" -- general purpose topics
    , "cfg"
    , "films"
    , "gimp"
-   , "games"
    ]
 
 myTopicConfig :: TopicConfig
@@ -169,14 +171,11 @@ myTopicConfig = TopicConfig
         [ ("start", "~")
         , ("email", "~")
         , ("proj", "~/proj")
-        , ("debug", "~/proj")
-        , ("cfg", "~/.xmonad")
-        , ("admin", "~/proj")
-        , ("im", "~")
-        , ("films", "~/mov")
         , ("music", "~/muza")
-        , ("doc", "~/Dropbox")
-        , ("games", "~")
+        , ("admin", "~/proj")
+        , ("cfg", "~/.xmonad")
+        , ("im", "~")
+        , ("films", "~/download")
         ]
     , defaultTopicAction = const (return ())
     --, defaultTopicAction = const $ spawnShell
@@ -190,17 +189,11 @@ myTopicConfig = TopicConfig
                         (sendMessage $ JumpToLayout "[-]"))
         , ("proj",      spawnShell >*> 2 >>
                         (sendMessage $ JumpToLayout "[-]"))
-        , ("debug",     spawnShell >>
-                        spawn "jumanji")
         , ("cfg",       spawnShell >>
                         spawnShellIn ".zsh" >>
                         spawnShellIn ".vim")
-        , ("admin",     spawnShell >*> 3 >>
-                        spawn "jumanji 172.29.0.1:8080")
+        , ("admin",     spawnShell >*> 3)
         , ("films",     spawnShell)
-        , ("games",     spawnShell)
-        , ("doc",       spawnShell >>
-                        spawnShellIn "doc")
         , ("vbox",      spawn "VirtualBox")
         , ("gimp",      spawn "gimp")
         , ("email",     spawn "chromium")
@@ -256,7 +249,6 @@ myLayout = avoidStruts
         $ smartBorders
         $ configurableNavigation noNavigateBorders
         $ boringWindows
-        $ onWorkspace "im" (im_layout')
         $ onWorkspace "gimp" (gimpL)
         $ default_layouts
         where
@@ -270,7 +262,6 @@ myLayout = avoidStruts
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
             magni_tall = named "[:]" $ magnifier resizable_tall'
             mirror_magni_tall = named "[=]" $ magnifier (Mirror resizable_tall')
-            im_layout' = named "[im]" $ reflectHoriz $ withIM (1%5) (Role "buddy_list") tabbed'
             gimpL = named "[gimp]" $ withIM (0.11) (Role "gimp-toolbox") $ reflectHoriz $ withIM (0.15) (Role "gimp-dock") tabbed'
          
 -- tabbed theme
@@ -327,7 +318,10 @@ myXPInboxConfig = myXPConfig {
         --font = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*"
 }
 
-inboxPrompt :: X()
-inboxPrompt = inputPrompt myXPInboxConfig "INBOX" ?+ addToInbox
-addToInbox :: String -> X()
-addToInbox x = liftIO $ appendFile "/home/pielgrzym/otl/inbox.otl" ("[_] " ++ x ++ "\n")
+-- inboxPrompt :: X()
+-- inboxPrompt = inputPrompt myXPInboxConfig "INBOX" ?+ addToInbox
+-- addToInbox :: String -> X()
+-- addToInbox x = liftIO $ appendFile "/home/pielgrzym/otl/inbox.otl" ("[_] " ++ x ++ "\n")
+
+promptNewWS :: X ()
+promptNewWS = inputPrompt myXPInboxConfig "New WS" ?+ addWorkspace

@@ -1,15 +1,15 @@
 Config { font = "-*-snap-*-*-*-*-10-*-*-*-*-*-*-u"
-       , bgColor = "#262626"
-       , fgColor = "#00ff00"
+       , bgColor = "#262218"
+       , fgColor = "#7d6f50"
        , position = Top
        , lowerOnStart = True
-       , commands = [ Run Network "eth0" ["-L","0","-H","32","--normal","green","--high","red"] 30
-                    , Run MultiCpu ["-t", "Cpu: <total0> <total1>", "-L","3","-H","50","--normal","green","--high","red"] 10
+       , commands = [ Run Network "eth0" ["-L","0","-H","32","--normal", "#7d6f50","--high", "#ed3e52"] 30
+                    , Run MultiCpu ["-t", "Cpu: <total0> <total1>", "-L","3","-H","50","--normal", "#7d6f50","--high", "#ed3e52"] 10
                     , Run Memory ["-t","Mem: <used>Mb <freebar>", "-f", "|", "-b", " "] 30
-                    , Run Date "%_d.%m.%Y <fc=#00af22>::</fc> <fc=#ff0000>%H:%M</fc>" "date" 50
+                    , Run Date "%_d.%m.%Y :: <fc=#ed3e52>%H:%M</fc>" "date" 50
                     , Run StdinReader
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% }{ [%multicpu%] [%memory%] [%eth0%] <fc=#00af22>::</fc> %date%"
+       , template = "%StdinReader% }{ [%multicpu%] [%memory%] [%eth0%] :: %date%"
        }

@@ -2,7 +2,7 @@ import XMonad hiding ( (|||) )
 import XMonad.Layout.LayoutCombinators
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.ManageHelpers(doRectFloat)
+import XMonad.Hooks.ManageHelpers(doRectFloat, Side (C))
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeysP, removeKeysP)
 import System.IO
@@ -57,8 +57,8 @@ main= do
                 { 
                 borderWidth          = 3
                 , terminal           = "urxvt"
-                , normalBorderColor  = "#004400"
-                , focusedBorderColor = myMainColor
+                , normalBorderColor  = "#262218"
+                , focusedBorderColor = "#ed3e52"
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
                 , manageHook         = myManageHook <+> manageDocks 
@@ -218,8 +218,6 @@ promptedCopy = workspacePrompt myXPConfig $ windows . copy
 
 myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""
 
-myMainColor = "#00aa00"
-
 myXPConfig = defaultXPConfig {
         font = myFont
         , fgColor = "black"
@@ -232,16 +230,15 @@ myXPConfig = defaultXPConfig {
 
 -- Color, font and iconpath definitions:
 myFont = "xft:snap:pixelsize=10"
-myDzenFGColor = "green"
-myDzenBGColor = "#262626"
-myNormalFGColor = "#ffffff"
-myNormalBGColor = "#0f0f0f"
-myFocusedFGColor = "#f0f0f0"
-myFocusedBGColor = "#333333"
-myUrgentFGColor = "red"
-myUrgentBGColor = "#0077ff"
+myDzenFGColor = "#7d6f50"
+myDzenBGColor = "#262218"
+myNormalFGColor = "#7d6f50"
+myNormalBGColor = "#262218"
+myFocusedFGColor = "#ed3e52"
+myFocusedBGColor = "#262218" 
+myUrgentFGColor = "#262218"
+myUrgentBGColor = "#ed813e"
 myIconFGColor = "#777777"
-myIconBGColor = "#0f0f0f"
 mySeperatorColor = "#555555"
 
 -- layout hook
@@ -266,17 +263,17 @@ myLayout = avoidStruts
          
 -- tabbed theme
 myTabTheme = defaultTheme
-    { activeColor = "" ++ myDzenFGColor ++ ""
-    , activeTextColor = "#000000"
-    , activeBorderColor = "" ++ myDzenFGColor ++ ""
-    , inactiveColor = "" ++ myDzenBGColor ++ ""
-    , inactiveTextColor = "" ++ myDzenFGColor ++ ""
-    , inactiveBorderColor ="" ++ myDzenBGColor ++ ""
+    { activeColor = "" ++ myFocusedFGColor ++ ""
+    , activeTextColor = myFocusedBGColor
+    , activeBorderColor = "" ++ myFocusedFGColor ++ ""
+    , inactiveColor = "" ++ myNormalBGColor ++ ""
+    , inactiveTextColor = "" ++ myNormalFGColor ++ ""
+    , inactiveBorderColor ="" ++ myNormalBGColor ++ ""
     , urgentColor = "" ++ myUrgentBGColor ++ ""
     , urgentTextColor = "" ++ myUrgentFGColor ++ ""
-    , urgentBorderColor = "" ++ myDzenFGColor ++ ""
-    , fontName = "xft:snap:pixelsize=10"
-    , decoHeight = 16
+    , urgentBorderColor = "" ++ myUrgentFGColor ++ ""
+    , fontName = myFont
+    , decoHeight = 15
     }
 
 -- manage hook
@@ -289,7 +286,10 @@ myManageHook = composeAll
     , className =? "Gimp"           --> doShift "gimp"
     , className =? "Conky"          --> doIgnore
     , className =? "Clementine"     --> doShift "muza"
-    , title     =? "Zapisz jako"    --> doCenterFloat
+    , title     =? "Zapisz jako"    --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
+    , title     =? "Save As"        --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
+    , title     =? "Otwarcie obrazu"--> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
+    , title     =? "Zapis obrazu"   --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
     , className =? "Skype"          --> doShift "im"
     , className =? "Pidgin"         --> doShift "im"
     , resource  =? "desktop_window" --> doIgnore
@@ -298,7 +298,7 @@ myManageHook = composeAll
 myStatusBar = "xmobar -x 0"
  
 myXmobarPP h = defaultPP
-    { ppCurrent = wrap ("[<fc=#ff0000>") "</fc>]" . \wsId -> dropIx wsId
+    { ppCurrent = wrap ("[<fc="++ myFocusedFGColor ++">") "</fc>]" . \wsId -> dropIx wsId
     , ppVisible = wrap ("[<fc=" ++ myNormalFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
     , ppHidden = wrap "" "" . \wsId -> dropIx wsId -- don't use <fc> here!!
     , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("<fc=" ++ mySeperatorColor ++ ">") "</fc>" . dropIx $ wsId
@@ -306,7 +306,7 @@ myXmobarPP h = defaultPP
     , ppSep = " "
     , ppWsSep = " "
     , ppTitle = xmobarColor (""++ myIconFGColor ++ "") "" . wrap "[ " " ]"
-    , ppLayout = xmobarColor ("red") "" 
+    , ppLayout = xmobarColor (myFocusedFGColor) "" 
     , ppOutput = hPutStrLn h
     }
     where

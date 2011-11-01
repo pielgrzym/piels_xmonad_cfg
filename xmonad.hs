@@ -220,8 +220,8 @@ myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGC
 
 myXPConfig = defaultXPConfig {
         font = myFont
-        , fgColor = "black"
-        , bgColor = "green"
+        , fgColor = myUrgentFGColor
+        , bgColor = myUrgentBGColor
         , promptBorderWidth = 0
         , fgHLight = "green"
         , bgHLight = "black"

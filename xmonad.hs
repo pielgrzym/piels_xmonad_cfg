@@ -291,6 +291,7 @@ myManageHook = composeAll
     , title     =? "Otwarcie obrazu"--> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
     , title     =? "Zapis obrazu"   --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
     , title     =? "Save Image"     --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
+    , title     =? "Otwórz pliki"   --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
     , title     =? "Enter name of file to save to…"   --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
     , className =? "Skype"          --> doShift "im"
     , className =? "Pidgin"         --> doShift "im"

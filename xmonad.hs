@@ -42,8 +42,11 @@ import XMonad.Prompt
 import XMonad.Prompt.Workspace
 import XMonad.Prompt.Input
 import XMonad.Actions.FloatKeys
-
 import XMonad.Actions.UpdatePointer
+-- my stuff
+import System.Directory
+import Control.Monad
+import XMonad.StackSet as SS
 
 main= do 
         bar <- spawnPipe myStatusBar
@@ -60,7 +63,7 @@ main= do
                 , normalBorderColor  = "#262218"
                 , focusedBorderColor = "#ed3e52"
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
-                , workspaces         = myWorkspaces
+                , XMonad.workspaces         = myWorkspaces
                 , manageHook         = myManageHook <+> manageDocks 
                 , layoutHook         = myLayout
                 , logHook            = (dynamicLogWithPP $ myXmobarPP bar) >> updatePointer (Relative 0.5 0.5)
@@ -70,10 +73,10 @@ main= do
                 (
                 [ ("M-r",       spawn (myDmenu))
                 , ("M-g",       goToSelected $ gsconfig2 greenColorizer) -- window grid
-                , ("M-j",       focusDown)
+                , ("M-j",       W.focusDown)
                 , ("M-<Return>", spawn("urxvt"))
                 , ("M-S-<Return>", windows W.swapMaster)
-                , ("M-k",       focusUp)
+                , ("M-k",       W.focusUp)
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
@@ -104,6 +107,7 @@ main= do
                 , ("M-S-;",     promptedShift) -- TS shift
                 , ("M-C-;",     promptedCopy) -- TS shift
                 , ("M-d",       promptNewWS) -- new workspace
+                , ("M-S-d",     promptOpenProj) -- new workspace
                 , ("M-S-<Backspace>",     removeWorkspace) -- remove workspace
                 , ("M-'",       toggleWS) -- switch to previous topic
                 -- window nav
@@ -228,6 +232,10 @@ myXPConfig = defaultXPConfig {
         , autoComplete = Just 1000
 }
 
+myProjXPConfig = myXPConfig {
+        autoComplete = Nothing
+        }
+
 -- Color, font and iconpath definitions:
 myFont = "xft:snap:pixelsize=10"
 myDzenFGColor = "#7d6f50"
@@ -322,8 +330,25 @@ myXPInboxConfig = myXPConfig {
 
 -- inboxPrompt :: X()
 -- inboxPrompt = inputPrompt myXPInboxConfig "INBOX" ?+ addToInbox
--- addToInbox :: String -> X()
--- addToInbox x = liftIO $ appendFile "/home/pielgrzym/otl/inbox.otl" ("[_] " ++ x ++ "\n")
+addToInbox :: String -> X()
+addToInbox x = liftIO $ appendFile "/home/pielgrzym/otl/inbox.otl" ("[_] " ++ x ++ "\n")
+
+openProj' :: String -> String -> X()
+openProj' name ws 
+                | name `elem` ws = goto name
+                | otherwise = addWorkspace name
+
+openProj :: String -> X()
+openProj name = do ws <- gets (SS.workspaces . windowset)
+                  sort <- getSortByIndex
+                  let ts = map tag $ sort ws
+                  openProj' name ts
 
 promptNewWS :: X ()
 promptNewWS = inputPrompt myXPInboxConfig "New WS" ?+ addWorkspace
+
+projDirCompletions :: String -> IO [String]
+projDirCompletions str = getDirectoryContents "/home/pielgrzym/work" >>= return . Prelude.filter (`notElem` [".", ".."]) >>= \lst -> mkComplFunFromList lst str
+
+promptOpenProj :: X ()
+promptOpenProj = inputPromptWithCompl myProjXPConfig "Open proj" projDirCompletions ?+ openProj

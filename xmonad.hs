@@ -2,7 +2,7 @@ import XMonad hiding ( (|||) )
 import XMonad.Layout.LayoutCombinators
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.ManageHelpers(doRectFloat)
+import XMonad.Hooks.ManageHelpers(doRectFloat, Side (C))
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeysP, removeKeysP)
 import System.IO
@@ -14,6 +14,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Actions.CycleWS
 -- copy windows! tag-like functionality
 import XMonad.Actions.CopyWindow
+import XMonad.Actions.DynamicWorkspaces
 -- extra layouts
 import XMonad.Layout.PerWorkspace 
 import XMonad.Layout.ResizableTile
@@ -56,8 +57,8 @@ main= do
                 { 
                 borderWidth          = 3
                 , terminal           = "urxvt"
-                , normalBorderColor  = "#004400"
-                , focusedBorderColor = myMainColor
+                , normalBorderColor  = "#262218"
+                , focusedBorderColor = "#ed3e52"
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
                 , manageHook         = myManageHook <+> manageDocks 
@@ -70,11 +71,13 @@ main= do
                 [ ("M-r",       spawn (myDmenu))
                 , ("M-g",       goToSelected $ gsconfig2 greenColorizer) -- window grid
                 , ("M-j",       focusDown)
+                , ("M-<Return>", spawn("urxvt"))
+                , ("M-S-<Return>", windows W.swapMaster)
                 , ("M-k",       focusUp)
                 , ("M-n",       nextWS)
                 , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
-                , ("M-c",       inboxPrompt)
+                -- , ("M-c",       inboxPrompt)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
                 -- audio controls
                 , ("<XF86Launch1>",           spawn "~/.xmonad/toggle_display.sh")
@@ -104,6 +107,8 @@ main= do
                 , ("M-;",       promptedGoto) -- TS goto
                 , ("M-S-;",     promptedShift) -- TS shift
                 , ("M-C-;",     promptedCopy) -- TS shift
+                , ("M-d",       promptNewWS) -- new workspace
+                , ("M-S-<Backspace>",     removeWorkspace) -- remove workspace
                 , ("M-'",       toggleWS) -- switch to previous topic
                 -- window nav
                 , ("C-M-l",     sendMessage $ Go R)
@@ -154,17 +159,14 @@ myTopics :: [Topic]
 myTopics =
    [ "start" -- the first one
    , "email"
-   , "proj", "debug"
-   , "doc", "music", "web"
+   , "proj"
+   , "music", "web"
    , "admin"
    , "im"
-   -- >9 topics:
    , "vbox"
-   , "1", "2", "3", "4" -- general purpose topics
    , "cfg"
    , "films"
    , "gimp"
-   , "games"
    ]
 
 myTopicConfig :: TopicConfig
@@ -173,14 +175,11 @@ myTopicConfig = TopicConfig
         [ ("start", "~")
         , ("email", "~")
         , ("proj", "~/proj")
-        , ("debug", "~/proj")
-        , ("cfg", "~/.xmonad")
-        , ("admin", "~/proj")
-        , ("im", "~")
-        , ("films", "~/mov")
         , ("music", "~/muza")
-        , ("doc", "~/Dropbox")
-        , ("games", "~")
+        , ("admin", "~/proj")
+        , ("cfg", "~/.xmonad")
+        , ("im", "~")
+        , ("films", "~/download")
         ]
     , defaultTopicAction = const (return ())
     --, defaultTopicAction = const $ spawnShell
@@ -194,17 +193,11 @@ myTopicConfig = TopicConfig
                         (sendMessage $ JumpToLayout "[-]"))
         , ("proj",      spawnShell >*> 2 >>
                         (sendMessage $ JumpToLayout "[-]"))
-        , ("debug",     spawnShell >>
-                        spawn "jumanji")
         , ("cfg",       spawnShell >>
                         spawnShellIn ".zsh" >>
                         spawnShellIn ".vim")
-        , ("admin",     spawnShell >*> 3 >>
-                        spawn "jumanji 172.29.0.1:8080")
+        , ("admin",     spawnShell >*> 3)
         , ("films",     spawnShell)
-        , ("games",     spawnShell)
-        , ("doc",       spawnShell >>
-                        spawnShellIn "doc")
         , ("vbox",      spawn "VirtualBox")
         , ("gimp",      spawn "gimp")
         , ("email",     spawn "chromium")
@@ -229,12 +222,10 @@ promptedCopy = workspacePrompt myXPConfig $ windows . copy
 
 myDmenu = "dmenu_run -fn terminus -nf \""++myDzenFGColor++"\" -nb \""++myDzenBGColor++"\" -sb \""++myDzenFGColor++"\" -sf \""++myDzenBGColor++"\""
 
-myMainColor = "#00aa00"
-
 myXPConfig = defaultXPConfig {
         font = myFont
-        , fgColor = "black"
-        , bgColor = "green"
+        , fgColor = myUrgentFGColor
+        , bgColor = myUrgentBGColor
         , promptBorderWidth = 0
         , fgHLight = "green"
         , bgHLight = "black"
@@ -243,16 +234,15 @@ myXPConfig = defaultXPConfig {
 
 -- Color, font and iconpath definitions:
 myFont = "xft:snap:pixelsize=10"
-myDzenFGColor = "green"
-myDzenBGColor = "#262626"
-myNormalFGColor = "#ffffff"
-myNormalBGColor = "#0f0f0f"
-myFocusedFGColor = "#f0f0f0"
-myFocusedBGColor = "#333333"
-myUrgentFGColor = "red"
-myUrgentBGColor = "#0077ff"
+myDzenFGColor = "#7d6f50"
+myDzenBGColor = "#262218"
+myNormalFGColor = "#7d6f50"
+myNormalBGColor = "#262218"
+myFocusedFGColor = "#ed3e52"
+myFocusedBGColor = "#262218" 
+myUrgentFGColor = "#262218"
+myUrgentBGColor = "#ed813e"
 myIconFGColor = "#777777"
-myIconBGColor = "#0f0f0f"
 mySeperatorColor = "#555555"
 
 -- layout hook
@@ -260,7 +250,6 @@ myLayout = avoidStruts
         $ smartBorders
         $ configurableNavigation noNavigateBorders
         $ boringWindows
-        $ onWorkspace "im" (im_layout')
         $ onWorkspace "gimp" (gimpL)
         $ default_layouts
         where
@@ -274,22 +263,21 @@ myLayout = avoidStruts
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
             magni_tall = named "[:]" $ magnifier resizable_tall'
             mirror_magni_tall = named "[=]" $ magnifier (Mirror resizable_tall')
-            im_layout' = named "[im]" $ reflectHoriz $ withIM (1%5) (Role "buddy_list") tabbed'
             gimpL = named "[gimp]" $ withIM (0.11) (Role "gimp-toolbox") $ reflectHoriz $ withIM (0.15) (Role "gimp-dock") tabbed'
          
 -- tabbed theme
 myTabTheme = defaultTheme
-    { activeColor = "" ++ myDzenFGColor ++ ""
-    , activeTextColor = "#000000"
-    , activeBorderColor = "" ++ myDzenFGColor ++ ""
-    , inactiveColor = "" ++ myDzenBGColor ++ ""
-    , inactiveTextColor = "" ++ myDzenFGColor ++ ""
-    , inactiveBorderColor ="" ++ myDzenBGColor ++ ""
+    { activeColor = "" ++ myFocusedFGColor ++ ""
+    , activeTextColor = myFocusedBGColor
+    , activeBorderColor = "" ++ myFocusedFGColor ++ ""
+    , inactiveColor = "" ++ myNormalBGColor ++ ""
+    , inactiveTextColor = "" ++ myNormalFGColor ++ ""
+    , inactiveBorderColor ="" ++ myNormalBGColor ++ ""
     , urgentColor = "" ++ myUrgentBGColor ++ ""
     , urgentTextColor = "" ++ myUrgentFGColor ++ ""
-    , urgentBorderColor = "" ++ myDzenFGColor ++ ""
-    , fontName = "xft:snap:pixelsize=10"
-    , decoHeight = 16
+    , urgentBorderColor = "" ++ myUrgentFGColor ++ ""
+    , fontName = myFont
+    , decoHeight = 15
     }
 
 -- manage hook
@@ -302,7 +290,13 @@ myManageHook = composeAll
     , className =? "Gimp"           --> doShift "gimp"
     , className =? "Conky"          --> doIgnore
     , className =? "Clementine"     --> doShift "muza"
-    , title     =? "Zapisz jako"    --> doCenterFloat
+    , title     =? "Zapisz jako"    --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
+    , title     =? "Save As"        --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
+    , title     =? "Otwarcie obrazu"--> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
+    , title     =? "Zapis obrazu"   --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
+    , title     =? "Save Image"     --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
+    , title     =? "Otwórz pliki"   --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
+    , title     =? "Enter name of file to save to…"   --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
     , className =? "Skype"          --> doShift "im"
     , className =? "Pidgin"         --> doShift "im"
     , resource  =? "desktop_window" --> doIgnore
@@ -311,7 +305,7 @@ myManageHook = composeAll
 myStatusBar = "xmobar -x 0"
  
 myXmobarPP h = defaultPP
-    { ppCurrent = wrap ("[<fc=#ff0000>") "</fc>]" . \wsId -> dropIx wsId
+    { ppCurrent = wrap ("[<fc="++ myFocusedFGColor ++">") "</fc>]" . \wsId -> dropIx wsId
     , ppVisible = wrap ("[<fc=" ++ myNormalFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
     , ppHidden = wrap "" "" . \wsId -> dropIx wsId -- don't use <fc> here!!
     , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("<fc=" ++ mySeperatorColor ++ ">") "</fc>" . dropIx $ wsId
@@ -319,7 +313,7 @@ myXmobarPP h = defaultPP
     , ppSep = " "
     , ppWsSep = " "
     , ppTitle = xmobarColor (""++ myIconFGColor ++ "") "" . wrap "[ " " ]"
-    , ppLayout = xmobarColor ("red") "" 
+    , ppLayout = xmobarColor (myFocusedFGColor) "" 
     , ppOutput = hPutStrLn h
     }
     where
@@ -331,7 +325,10 @@ myXPInboxConfig = myXPConfig {
         --font = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*"
 }
 
-inboxPrompt :: X()
-inboxPrompt = inputPrompt myXPInboxConfig "INBOX" ?+ addToInbox
-addToInbox :: String -> X()
-addToInbox x = liftIO $ appendFile "/home/pielgrzym/otl/inbox.otl" ("[_] " ++ x ++ "\n")
+-- inboxPrompt :: X()
+-- inboxPrompt = inputPrompt myXPInboxConfig "INBOX" ?+ addToInbox
+-- addToInbox :: String -> X()
+-- addToInbox x = liftIO $ appendFile "/home/pielgrzym/otl/inbox.otl" ("[_] " ++ x ++ "\n")
+
+promptNewWS :: X ()
+promptNewWS = inputPrompt myXPInboxConfig "New WS" ?+ addWorkspace

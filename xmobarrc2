@@ -1,9 +1,9 @@
 Config { font = "-*-snap-*-*-*-*-10-*-*-*-*-*-*-u"
-       , bgColor = "#262626"
-       , fgColor = "#00ff00"
+       , bgColor = "#262218"
+       , fgColor = "#7d6f50"
        , position = Top
        , lowerOnStart = True
-       , commands = [ Run CoreTemp ["-t", "[Temp: <core0>C <core1>C]", "-L", "35", "-H", "45", "-l", "green", "-h", "red"] 50
+       , commands = [ Run CoreTemp ["-t", "[Temp: <core0>C <core1>C]", "-L", "35", "-H", "45", "-l", "#7d6f50", "-h", "#ed3e52"] 50
                     , Run DiskU [("/", "[Root free: <free>]"), ("/home", "[Home free: <free>]")] [] 50
                     , Run TopProc [] 50
                     , Run TopMem [] 50

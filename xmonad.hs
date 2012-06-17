@@ -12,6 +12,7 @@ import XMonad.Util.Loggers
 import XMonad.Hooks.ManageHelpers ( isFullscreen, isDialog, doCenterFloat, doFullFloat )
 import XMonad.Layout.NoBorders
 import XMonad.Actions.CycleWS
+import XMonad.Util.Scratchpad
 -- copy windows! tag-like functionality
 import XMonad.Actions.CopyWindow
 import XMonad.Actions.DynamicWorkspaces
@@ -56,12 +57,12 @@ main= do
                $ defaultConfig 
                 { 
                 borderWidth          = 3
-                , terminal           = "urxvt"
+                , terminal           = "urxvtc"
                 , normalBorderColor  = "#262218"
                 , focusedBorderColor = "#ed3e52"
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
-                , manageHook         = myManageHook <+> manageDocks 
+                , manageHook         = myManageHook <+> manageDocks <+> manageScratchPad
                 , layoutHook         = myLayout
                 , logHook            = (dynamicLogWithPP $ myXmobarPP bar) >> updatePointer (Relative 0.5 0.5)
                 }
@@ -71,12 +72,11 @@ main= do
                 [ ("M-r",       spawn (myDmenu))
                 , ("M-g",       goToSelected $ gsconfig2 greenColorizer) -- window grid
                 , ("M-j",       focusDown)
-                , ("M-<Return>", spawn("urxvt"))
+                , ("M-<Return>", spawn("urxvtc"))
                 , ("M-S-<Return>", windows W.swapMaster)
                 , ("M-k",       focusUp)
-                , ("M-n",       nextWS)
-                , ("M-p",       prevWS)
                 , ("M-u",       focusUrgent)
+                , ("M-p",       scratchPad)
                 -- , ("M-c",       inboxPrompt)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
                 -- audio output controls
@@ -165,6 +165,10 @@ myTopics =
    , "gimp"
    ]
 
+scratchPad = scratchpadSpawnActionTerminal "urxvtc"
+manageScratchPad :: ManageHook
+manageScratchPad = scratchpadManageHook (W.RationalRect 0.05 0.05 0.9 0.5)
+
 myTopicConfig :: TopicConfig
 myTopicConfig = TopicConfig
     { topicDirs = M.fromList $
@@ -185,7 +189,7 @@ myTopicConfig = TopicConfig
         [ ("start",     spawnShell)
         , ("web",       spawn "firefox")
         , ("im",        spawnShell)
-        , ("music",     spawn "clementine" >>
+        , ("music",     spawnShell >>
                         (sendMessage $ JumpToLayout "[-]"))
         , ("proj",      spawnShell >*> 2 >>
                         (sendMessage $ JumpToLayout "[-]"))
@@ -205,7 +209,7 @@ myShell = "zsh"
 spawnShell :: X ()
 spawnShell = currentTopicDir myTopicConfig >>= spawnShellIn
 spawnShellIn :: Dir -> X ()
-spawnShellIn dir = spawn $ "urxvt -cd " ++ dir 
+spawnShellIn dir = spawn $ "urxvtc -cd " ++ dir 
 goto :: Topic -> X ()
 goto = switchTopic myTopicConfig
 promptedGoto :: X ()
@@ -301,11 +305,11 @@ myManageHook = composeAll
 myStatusBar = "xmobar -x 0"
  
 myXmobarPP h = defaultPP
-    { ppCurrent = wrap ("[<fc="++ myFocusedFGColor ++">") "</fc>]" . \wsId -> dropIx wsId
-    , ppVisible = wrap ("[<fc=" ++ myNormalFGColor ++ ">") "</fc>]" . \wsId -> dropIx wsId
-    , ppHidden = wrap "" "" . \wsId -> dropIx wsId -- don't use <fc> here!!
-    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("<fc=" ++ mySeperatorColor ++ ">") "</fc>" . dropIx $ wsId
-    , ppUrgent = wrap ("<fc=" ++ myUrgentFGColor ++ ">!") "!</fc>" . \wsId -> dropIx wsId
+    { ppCurrent = wrap ("[<fc="++ myFocusedFGColor ++">") "</fc>]"
+    , ppVisible = wrap ("[<fc=" ++ myNormalFGColor ++ ">") "</fc>]"
+    , ppHidden = wrap "" "" . \wsId -> noScratchPad wsId
+    , ppHiddenNoWindows = \wsId -> if wsId `notElem` staticWs then "" else wrap ("<fc=" ++ mySeperatorColor ++ ">") "</fc>" . noScratchPad $ wsId
+    , ppUrgent = wrap ("<fc=" ++ myUrgentFGColor ++ ">!") "!</fc>"
     , ppSep = " "
     , ppWsSep = " "
     , ppTitle = xmobarColor (""++ myIconFGColor ++ "") "" . wrap "[ " " ]"
@@ -313,7 +317,7 @@ myXmobarPP h = defaultPP
     , ppOutput = hPutStrLn h
     }
     where
-    dropIx wsId = if (':' `elem` wsId) then drop 2 wsId else wsId
+    noScratchPad ws = if ws == "NSP" then "" else ws
     staticWs = ["start", "web", "proj", "email", "admin"]
 
 myXPInboxConfig = myXPConfig {

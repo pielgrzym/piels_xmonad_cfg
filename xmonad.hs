@@ -79,10 +79,9 @@ main= do
                 , ("M-p",       scratchPad)
                 -- , ("M-c",       inboxPrompt)
                 , ("M-f",       withFocused (sendMessage . maximizeRestore))
-                -- audio output controls
-                , ("M-<F1>",    spawn "~/.xmonad/sound_output.sh 0") -- headphones
-                , ("M-<F2>",    spawn "~/.xmonad/sound_output.sh 1") -- speakers
                 -- eof cmus control
+                -- open a project - spawn gvim and 2 urxvt windows
+                , ("M-<F2>",    spawn "popen")
                 , ("M-<F8>",    sendMessage $ JumpToLayout "[T]")
                 , ("M-<F9>",    sendMessage $ JumpToLayout "[|]")
                 , ("M-<F10>",   sendMessage $ JumpToLayout "[-]")

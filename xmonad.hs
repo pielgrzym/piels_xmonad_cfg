@@ -87,6 +87,8 @@ main= do
                 -- screen lock
                 , ("<XF86ScreenSaver>",    spawn "slock")
                 -- eof cmus control
+                -- open a project - spawn gvim and 2 urxvt windows
+                , ("M-<F2>",    spawn "popen")
                 , ("M-<F8>",    sendMessage $ JumpToLayout "[T]")
                 , ("M-<F9>",    sendMessage $ JumpToLayout "[|]")
                 , ("M-<F10>",   sendMessage $ JumpToLayout "[-]")

@@ -10,10 +10,11 @@ Config { font = "-*-snap-*-*-*-*-10-*-*-*-*-*-*-u"
                     , Run TopProc [] 50
                     , Run Battery ["-t", "Batt: <left> <leftbar>", "-L","10","-H","80", "-l", "#ed3e52", "--normal","yellow","--high","#7d6f50", "-f", "|", "-b", " "] 50
                     , Run Com "dropbox status | tail -n 1" [] "dropbox" 100
+                    , Run Com "netcfg current| tail -n 1" [] "netcfg" 200
                     --, Run Wireless "wlan0" ["-t", "<essid>: <qualitybar>"] 30
                     , Run StdinReader
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% }{ [TopCpu: %top%] [%multicpu%] [%memory%] [%wlan0%] [%battery%] [Dropbox: %dropbox%] :: %date%"
+       , template = "%StdinReader% }{ [TopCpu: %top%] [%multicpu%] [%memory%] [%wlan0%] [%battery%] [Dropbox: %dropbox%] [Network: %netcfg%] :: %date%"
        }

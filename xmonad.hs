@@ -20,14 +20,9 @@ import XMonad.Actions.DynamicWorkspaces
 import XMonad.Layout.PerWorkspace 
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Tabbed
-import XMonad.Layout.ThreeColumns
-import XMonad.Layout.IM
-import Data.Ratio ((%))
-import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
-import XMonad.Layout.Circle
 import XMonad.Layout.Named
-import XMonad.Layout.Reflect
+import XMonad.Layout.DecorationMadness
 -- sublayouts
 import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll, SubMessage), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
 import XMonad.Layout.WindowNavigation
@@ -239,18 +234,18 @@ myLayout = avoidStruts
         $ smartBorders
         $ configurableNavigation noNavigateBorders
         $ boringWindows
-        $ onWorkspace "gimp" (gimpL)
+        $ onWorkspace "gimp" (circle')
         $ default_layouts
         where
-            default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall')
+            default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| circle')
             -- default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| magni_tall ||| mirror_magni_tall)
             --big_layouts = (tabbed' ||| Full ||| magni_tall)
             -- complex layout definitions:
+            circle' = named "[%]" $ circleDecoResizable shrinkText myTabTheme
             resizable_tall' = named "[|]" $ maximize $ enableTabs $ spacing 2 $ ResizableTall 1 (3/100) (1/2) []
             mirror_resizable_tall' = named "[-]" $ maximize $ enableTabs $ spacing 2 $ Mirror $ ResizableTall 1 (3/100) (4/5) []
             tabbed'        = named "[T]" $ withBorder 1 $ maximize $ tabbed shrinkText myTabTheme
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
-            gimpL = named "[gimp]" $ withIM (0.11) (Role "gimp-toolbox") $ reflectHoriz $ withIM (0.15) (Role "gimp-dock") tabbed'
          
 -- tabbed theme
 myTabTheme = defaultTheme

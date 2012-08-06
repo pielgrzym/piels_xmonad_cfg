@@ -20,14 +20,9 @@ import XMonad.Actions.DynamicWorkspaces
 import XMonad.Layout.PerWorkspace 
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Tabbed
-import XMonad.Layout.ThreeColumns
-import XMonad.Layout.IM
-import Data.Ratio ((%))
-import XMonad.Layout.Magnifier
 import XMonad.Layout.Maximize
-import XMonad.Layout.Circle
 import XMonad.Layout.Named
-import XMonad.Layout.Reflect
+import XMonad.Layout.DecorationMadness
 -- sublayouts
 import XMonad.Layout.SubLayouts(GroupMsg(UnMergeAll, UnMerge, MergeAll, SubMessage), defaultSublMap, onGroup, pullGroup, pushWindow, subLayout, subTabbed)
 import XMonad.Layout.WindowNavigation
@@ -63,7 +58,7 @@ main= do
                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key 
                 , workspaces         = myWorkspaces
                 , manageHook         = myManageHook <+> manageDocks <+> manageScratchPad
-                , layoutHook         = myLayout
+                , layoutHook         = avoidStruts $ myLayout
                 , logHook            = (dynamicLogWithPP $ myXmobarPP bar) >> updatePointer (Relative 0.5 0.5)
                 }
                 `removeKeysP` [ "M-w", "M-e", "M-b" ] 
@@ -97,6 +92,7 @@ main= do
                 , ("M-S-c",     kill1)  -- remove a window copy or kill window otherwise
                 , ("M-M1-k",    sendMessage MirrorExpand)
                 , ("M-M1-j",    sendMessage MirrorShrink)
+                , ("M-n",       sendMessage $ ToggleStrut R) -- Merge to Tabbed
                 , ("M-m M-h",   sendMessage $ pullGroup L) -- Merge to Tabbed
                 , ("M-m M-l",   sendMessage $ pullGroup R)
                 , ("M-m M-k",   sendMessage $ pullGroup U)
@@ -159,10 +155,8 @@ greenColorizer = colorRangeFromClassName
 
 myTopics :: [Topic]
 myTopics =
-   [ "start" -- the first one
-   , "email"
-   , "proj"
-   , "music", "web"
+   [ "dashboard" -- the first one
+   , "web"
    , "admin"
    , "im"
    , "vbox"
@@ -178,11 +172,8 @@ manageScratchPad = scratchpadManageHook (W.RationalRect 0.05 0.05 0.9 0.5)
 myTopicConfig :: TopicConfig
 myTopicConfig = TopicConfig
     { topicDirs = M.fromList $
-        [ ("start", "~")
-        , ("email", "~")
-        , ("proj", "~/proj")
-        , ("music", "~/muza")
-        , ("admin", "~/proj")
+        [ ("dashboard", "~")
+        , ("admin", "~/work")
         , ("cfg", "~/.xmonad")
         , ("im", "~")
         , ("films", "~/download")
@@ -192,21 +183,15 @@ myTopicConfig = TopicConfig
     , defaultTopic = "start"
     , maxTopicHistory = 10
     , topicActions = M.fromList $
-        [ ("start",     spawnShell)
+        [ ("dashboard",     spawnShell >>
+                        spawn "conky -c ~/.conky/conky_grey")
         , ("web",       spawn "firefox")
         , ("im",        spawnShell)
-        , ("music",     spawnShell >>
-                        (sendMessage $ JumpToLayout "[-]"))
-        , ("proj",      spawnShell >*> 2 >>
-                        (sendMessage $ JumpToLayout "[-]"))
-        , ("cfg",       spawnShell >>
-                        spawnShellIn ".zsh" >>
-                        spawnShellIn ".vim")
-        , ("admin",     spawnShell >*> 3)
+        , ("cfg",       spawnShell)
+        , ("admin",     spawnShell)
         , ("films",     spawnShell)
         , ("vbox",      spawn "VirtualBox")
         , ("gimp",      spawn "gimp")
-        , ("email",     spawn "chromium")
         ]
     }
 
@@ -256,20 +241,18 @@ myLayout = avoidStruts
         $ smartBorders
         $ configurableNavigation noNavigateBorders
         $ boringWindows
-        $ onWorkspace "gimp" (gimpL)
+        $ onWorkspace "gimp" (circle')
         $ default_layouts
         where
-            default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| magni_tall ||| mirror_magni_tall)
+            default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| circle')
+            -- default_layouts = (tabbed' ||| resizable_tall' ||| mirror_resizable_tall' ||| magni_tall ||| mirror_magni_tall)
             --big_layouts = (tabbed' ||| Full ||| magni_tall)
             -- complex layout definitions:
+            circle' = named "[%]" $ circleDecoResizable shrinkText myTabTheme
             resizable_tall' = named "[|]" $ maximize $ enableTabs $ spacing 2 $ ResizableTall 1 (3/100) (1/2) []
             mirror_resizable_tall' = named "[-]" $ maximize $ enableTabs $ spacing 2 $ Mirror $ ResizableTall 1 (3/100) (4/5) []
             tabbed'        = named "[T]" $ withBorder 1 $ maximize $ tabbed shrinkText myTabTheme
-            three_col'     = named "[3]" $ spacing 2 $ maximize $ ThreeColMid 2 (3/100) (4/5)
             enableTabs x  = addTabs shrinkText myTabTheme $ subLayout [] Simplest x
-            magni_tall = named "[:]" $ magnifier resizable_tall'
-            mirror_magni_tall = named "[=]" $ magnifier (Mirror resizable_tall')
-            gimpL = named "[gimp]" $ withIM (0.11) (Role "gimp-toolbox") $ reflectHoriz $ withIM (0.15) (Role "gimp-dock") tabbed'
          
 -- tabbed theme
 myTabTheme = defaultTheme
@@ -294,7 +277,7 @@ myManageHook = composeAll
     , className =? "Xmessage"       --> doCenterFloat
     , className =? "feh"            --> doFloat
     , className =? "Gimp"           --> doShift "gimp"
-    , className =? "Conky"          --> doIgnore
+    -- , className =? "Conky"          --> doFloat
     , className =? "Clementine"     --> doShift "muza"
     , title     =? "Zapisz jako"    --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)
     , title     =? "Save As"        --> doRectFloat (W.RationalRect 0.05 0.05 0.6 0.6)

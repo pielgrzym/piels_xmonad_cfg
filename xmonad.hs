@@ -176,8 +176,7 @@ myTopicConfig = TopicConfig
     , defaultTopic = "start"
     , maxTopicHistory = 10
     , topicActions = M.fromList $
-        [ ("dashboard",     spawnShell >>
-                        spawn "conky -c ~/.conky/conky_grey")
+        [ ("dashboard",     spawnShell)
         , ("web",       spawn "firefox")
         , ("im",        spawnShell)
         , ("cfg",       spawnShell)

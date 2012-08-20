@@ -5,6 +5,7 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers(doRectFloat, Side (C))
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeysP, removeKeysP)
+import XMonad.Util.SpawnOnce
 import System.IO
 import qualified XMonad.StackSet as W
 import XMonad.Actions.GridSelect
@@ -43,10 +44,6 @@ import XMonad.Actions.UpdatePointer
 
 main= do 
         bar <- spawnPipe myStatusBar
-        spawn "xmobar ~/.xmonad/xmobarrc2 -x 1"
-        --spawn "unclutter -idle 3"
-        spawn "nitrogen --restore"
-        --urxvtd <- spawnPipe "urxvtd -q -f"
         checkTopicConfig myTopics myTopicConfig
         xmonad $ withUrgencyHook NoUrgencyHook
                $ defaultConfig 
@@ -60,6 +57,7 @@ main= do
                 , manageHook         = myManageHook <+> manageDocks <+> manageScratchPad
                 , layoutHook         = avoidStruts $ myLayout
                 , logHook            = (dynamicLogWithPP $ myXmobarPP bar) >> updatePointer (Relative 0.5 0.5)
+                , startupHook        = myStartupHook
                 }
                 `removeKeysP` [ "M-w", "M-e", "M-b" ] 
                 `additionalKeysP`
@@ -133,6 +131,13 @@ main= do
                 )
 
 myWorkspaces = myTopics
+
+myStartupHook = do
+        spawnOnce "xmobar ~/.xmonad/xmobarrc2 -x 1"
+        spawnOnce "conky"
+        --spawn "unclutter -idle 3"
+        spawn "nitrogen --restore"
+        --urxvtd <- spawnPipe "urxvtd -q -f"
 
 gsconfig2 colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 30, gs_cellwidth = 100 }
 greenColorizer = colorRangeFromClassName

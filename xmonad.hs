@@ -131,7 +131,7 @@ main= do
                 -- below: screen swithing with 'i' and 'o'
                 [("M-"++m++[key], screenWorkspace sc >>= flip whenJust (windows . f))
                         | (f, m) <- [(W.view, ""), (W.shift, "S-"), (copy, "C-")]
-                        , (key, sc) <- zip "oi" [0 .. ]]
+                        , (key, sc) <- zip "io" [0 .. ]]
                 ++
                 -- below: workspace greedy switch with M-[0..9], move to ws with M-S-[0..9] and copy to ws with M-C-[0..9]
                 [("M-"++m++[key], action tag)
